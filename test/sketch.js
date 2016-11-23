@@ -116,7 +116,7 @@ function tweetIt() {
   if (r < 0.33) {
     console.log('char markov');
     tweet = markov.generate();
-  } else if (r < 0.67) {
+  } else if (r < 0.66) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0] + ' ' + rg.expandFrom('<HASHTAG>');
