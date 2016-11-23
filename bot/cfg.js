@@ -9,12 +9,15 @@ function CFG() {
 CFG.prototype.initGrammar = function() {
   this.rg.addRule('<start>', '<S> <HASHTAG>');
   this.rg.addRule('<start>', '<S> <HASHTAG> <HASHTAG>');
+  this.rg.addRule('<start>', '<S> <HASHTAG> <HASHTAG> <HASHTAG>');
   this.rg.addRule('<start>', '<S> <S> <HASHTAG>', 0.5);
   this.rg.addRule('<NVP>', '<NP> <VP>')
   this.rg.addRule('<NVP>', '<NP> <MD> <VP>')
-  this.rg.addRule('<S>', '<UH><PUNC> <S>');
-  this.rg.addRule('<S>', '<NVP><PUNC>', 0.6);
-  this.rg.addRule('<S>', '<NVP> <CC> <S>', 0.3);
+  this.rg.addRule('<S>', '<UH><PUNC>', 0.1);
+  this.rg.addRule('<S>', '<UH><PUNC> <S>', 0.3);
+  this.rg.addRule('<S>', '<UH><PUNC> <NVP><PUNC>', 1);
+  this.rg.addRule('<S>', '<NVP><PUNC>', 0.5);
+  this.rg.addRule('<S>', '<NVP> <CC> <S>', 0.1);
   this.rg.addRule('<NP>', '<DT> <JJ> <NN>');
   this.rg.addRule('<NP>', '<DT> <NN>');
   this.rg.addRule('<NOUN>', '<NN>');
