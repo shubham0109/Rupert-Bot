@@ -1,0 +1,15 @@
+{
+  "name": "rupertbot",
+  "description": "Rupert Bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rita": "^1.1.51",
+    "twit": "^2.1.1"
+  }
+}
