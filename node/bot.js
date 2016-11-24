@@ -62,7 +62,7 @@ function tweeter() {
 
   // Only tweet UTC Thursdays 1am-5am
   // Announce tweeting somwhere in the 5 minutes until range
-  console.log(day, hours, minutes);
+  console.log(day,hours,minutes);
   if (day == 4 && hours == 0 && minutes > 54) {
     starting = true;
   }
@@ -106,11 +106,20 @@ function generateTweet() {
   if (r < 0.33) {
     console.log('char markov');
     tweet = markov.generate();
+    if (random(1) < 0.5) {
+      var hash = rg.expandFrom('<HASHTAG>');
+      tweet = tweet + ' ' + hash;
+    }
   } else if (r < 0.66) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
-    //tweet = result[0] + ' ' + rg.expandFrom('<HASHTAG>');
+    // Fixing hashtags
+    tweet = tweet.replace(/#\s+(\w+)/, '#$1');
+    if (random(1) < 0.5) {
+      var hash = rg.expandFrom('<HASHTAG>');
+      tweet = tweet + ' ' + hash;
+    }
   } else {
     console.log('cfg');
     var result = cfg.expand();

@@ -47,6 +47,8 @@ CFG.prototype.initGrammar = function() {
   this.rg.addRule('<PUNC>', '?');
   this.rg.addRule('<PUNC>', '!');
   this.rg.addRule('<PUNC>', '!');
+  // adding some genx millenial names
+  this.rg.addRule('<NNP>', 'David | Zeke | Hannah | Sunday | Brett | Jay | Chris | Taylor | Jessica | Ken | Will');
 }
 
 // MISSING pos
