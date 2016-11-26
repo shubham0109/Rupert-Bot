@@ -106,7 +106,7 @@ function generateTweet() {
   if (r < 0.33) {
     console.log('char markov');
     tweet = markov.generate();
-    if (random(1) < 0.5) {
+    if (Math.random() < 0.5) {
       var hash = rg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
@@ -116,7 +116,7 @@ function generateTweet() {
     tweet = result[0];
     // Fixing hashtags
     tweet = tweet.replace(/#\s+(\w+)/, '#$1');
-    if (random(1) < 0.5) {
+    if (Math.random() < 0.5) {
       var hash = rg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
