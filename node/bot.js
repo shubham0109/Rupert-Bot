@@ -62,7 +62,7 @@ function tweeter() {
 
   // Only tweet UTC Thursdays 1am-5am
   // Announce tweeting somwhere in the 5 minutes until range
-  console.log(day,hours,minutes);
+  console.log(day, hours, minutes);
   if (day == 4 && hours == 0 && minutes > 54) {
     starting = true;
   }
@@ -107,7 +107,7 @@ function generateTweet() {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
-      var hash = rg.expandFrom('<HASHTAG>');
+      var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
   } else if (r < 0.66) {
@@ -117,7 +117,7 @@ function generateTweet() {
     // Fixing hashtags
     tweet = tweet.replace(/#\s+(\w+)/, '#$1');
     if (Math.random() < 0.5) {
-      var hash = rg.expandFrom('<HASHTAG>');
+      var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
   } else {
@@ -149,4 +149,37 @@ function generateTweet() {
   }
   tweet = tweet.replace(/@/, '');
   return tweet;
+}
+
+
+
+// When someone follows RupBot
+// Setting up a user stream
+var stream = T.stream('user');
+// Anytime someone follows me
+stream.on('follow', followed);
+
+// Just looking at the event but I could tweet back!
+function followed(event) {
+  var name = event.source.name;
+  var screenName = event.source.screen_name;
+  var tweet = generateTweet();
+  tweet = '@' + screenName + ' ' + tweet;
+  if (tweet.length > 140) {
+    tweet = tweet.substring(0, 140);
+  }
+
+  T.post('statuses/update', {
+    status: tweet
+  }, tweeted);
+
+  // Callback for when the tweet is sent
+  function tweeted(err, data, response) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Follow tweet: ' + data.text);
+      //console.log(response);
+    }
+  }
 }

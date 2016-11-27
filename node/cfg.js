@@ -84,3 +84,7 @@ CFG.prototype.addWords = function(wordcounts) {
 CFG.prototype.expand = function() {
   return this.rg.expand();
 }
+
+CFG.prototype.expandFrom = function(s) {
+  return this.rg.expandFrom(s);
+}
