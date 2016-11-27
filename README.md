@@ -40,6 +40,4 @@ When Rupbot tweets, it picks one of three options.
 <ADJP> --> <JJ> | <JJR> | <PRP$> | <JJS>
 <PUNC> --> . | ? | !
 ```
-```
-
 
