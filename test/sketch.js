@@ -1,5 +1,5 @@
 function tokenize(s) {
-  return s.split(/([A-Z0-9']+)/i);
+  return s.split(/([^A-Z0-9'%]+)/i);
 }
 
 

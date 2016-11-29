@@ -3,6 +3,8 @@
 // http://shiffman.net/a2z
 // https://github.com/shiffman/A2Z-F16
 
+var wordfilter = require('wordfilter');
+
 var livetweets = [
   'It\'s almost time for tonight\'s episode of #Survivor. Will you be around to live tweet with me? #survivor',
   'Each Wednesday night I live tweet Survivor! Watch along with me!'
@@ -46,10 +48,10 @@ cfg.initGrammar();
 cfg.addWords(wordcounts);
 
 // Start once
-tweeter();
+// tweeter();
 
 // Once every N milliseconds
-setInterval(tweeter, 60 * 5 * 1000);
+// setInterval(tweeter, 60 * 5 * 1000);
 
 // Here is the bot!
 function tweeter() {
@@ -79,6 +81,11 @@ function tweeter() {
     tweet = livetweets[index];
   } else if (live) {
     tweet = generateTweet();
+    // Make sure nothing offensive
+    while (wordfilter.blacklisted(tweet)) {
+      tweet = generateTweet();
+    }
+
   }
 
   if (starting || live) {
@@ -86,16 +93,6 @@ function tweeter() {
       status: tweet
     }, tweeted);
   }
-
-  // Callback for when the tweet is sent
-  function tweeted(err, data, response) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Success: ' + data.text);
-      //console.log(response);
-    }
-  };
 
 }
 
@@ -163,23 +160,110 @@ stream.on('follow', followed);
 function followed(event) {
   var name = event.source.name;
   var screenName = event.source.screen_name;
-  var tweet = generateTweet();
-  tweet = '@' + screenName + ' ' + tweet;
-  if (tweet.length > 140) {
-    tweet = tweet.substring(0, 140);
+
+  if (screenName !== 'rupbot') {
+    var tweet = generateTweet();
+    tweet = '@' + screenName + ' ' + tweet;
+    if (tweet.length > 140) {
+      tweet = tweet.substring(0, 140);
+    }
+
+    T.post('statuses/update', {
+      status: tweet
+    }, tweeted);
+  }
+}
+
+// Replying!
+stream.on('tweet', tweetEvent);
+
+function tweetEvent(tweet) {
+
+  // If we wanted to write a file out
+  // to look more closely at the data
+  // var fs = require('fs');
+  // var json = JSON.stringify(tweet,null,2);
+  // fs.writeFile("tweet.json", json, output);
+
+  // Who is this in reply to?
+  var reply_to = tweet.in_reply_to_screen_name;
+  // Who sent the tweet?
+  var name = tweet.user.screen_name;
+  // What is the text?
+  var txt = tweet.text;
+  // If we want the conversation thread
+  var id = tweet.id_str;
+
+  // Ok, if this was in reply to me
+  // Tweets by me show up here too
+  if (name !== 'rupbot' && reply_to === 'rupbot') {
+    // Get rid of the @ mention
+    txt = txt.replace(/@rupbot\s+/g, '');
+    console.log('original tweet: ' + txt);
+    generateReply(txt, name, id);
+
+  }
+}
+
+
+function generateReply(txt, name, id) {
+  var tokens = txt.split(/\W+/);
+  console.log(tokens);
+  var total = Math.floor(Math.random() * 2) + 1;
+  var index = Math.floor(Math.random() * (tokens.length - 1));
+  var primetext = tokens[index] + ' ' + tokens[index + 1];
+
+  var spawn = require('child_process').spawn;
+
+  var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.6765.t7_cpu.t7', '-length', '100'];
+  params[4] = '-temperature';
+  params[5] = Math.random() * 0.9 + 0.1;
+  params[6] = '-primetext';
+  params[7] = primetext;
+  params[8] = '-seed';
+  params[9] = Math.floor(Math.random() * 1000);
+  console.log('temperature: ' + params[5]);
+  console.log('prime text: ' + params[7]);
+
+  var proc = spawn('th', params);
+  proc.stdout.on('data', reply);
+  proc.stderr.on('data', error);
+
+  function error(data) {
+    var results = data.toString();
   }
 
-  T.post('statuses/update', {
-    status: tweet
-  }, tweeted);
+  function reply(data) {
+    var results = data.toString().split(/\n+/);
+    console.log(results);
 
-  // Callback for when the tweet is sent
-  function tweeted(err, data, response) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Follow tweet: ' + data.text);
-      //console.log(response);
+    // Start a reply back to the sender
+    var replyText = '@' + name + ' ' + results[0];
+
+    if (replyText.length > 140) {
+      replyText = replyText.substring(0, 140);
     }
+
+    if (!wordfilter.blacklisted(replyText)) {
+
+      // Post that tweet
+      T.post('statuses/update', {
+        status: replyText,
+        in_reply_to_status_id: id
+      }, tweeted);
+    } else {
+      console.log('blacklisted: ' + replyText);
+    }
+  }
+}
+
+
+// Callback for when the tweet is sent
+function tweeted(err, data, response) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Success: ' + data.text);
+    //console.log(response);
   }
 }

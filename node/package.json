@@ -9,7 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fb": "^1.1.1",
+    "request": "^2.79.0",
     "rita": "^1.1.51",
-    "twit": "^2.1.1"
+    "snoowrap": "^1.11.3",
+    "twit": "^2.1.1",
+    "wordfilter": "^0.2.6"
   }
 }
