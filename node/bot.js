@@ -3,6 +3,24 @@
 // http://shiffman.net/a2z
 // https://github.com/shiffman/A2Z-F16
 
+function tokenize(s) {
+  return s.split(/([^A-Z0-9'%]+)/i);
+}
+
+function capitalize(before, after) {
+  if (/^[A-Z]+$/.test(before)) {
+    return after.toUpperCase();
+  } else if (/^[a-z]+$/.test(before)) {
+    return after.toLowerCase();
+  } else if (/^[A-Z][a-z]*$/.test(before)) {
+    var c = after.charAt(0).toUpperCase();
+    return c + after.substring(1, after.length);
+  }
+  return after;
+
+}
+
+
 var wordfilter = require('wordfilter');
 
 var livetweets = [
@@ -24,10 +42,11 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
-var txt = fs.readFileSync('rupert.txt', 'utf-8');
+var txt = fs.readFileSync('data/rupert.txt', 'utf-8');
 
 var Concordance = require('./concordance.js');
 var MarkovGenerator = require('./markov.js');
+var POS = require('./pos.js');
 
 var wordcounts = new Concordance();
 wordcounts.process(txt);
@@ -47,11 +66,24 @@ var cfg = new CFG();
 cfg.initGrammar();
 cfg.addWords(wordcounts);
 
+posdict = new POS();
+for (var i = 0; i < lines.length; i++) {
+  posdict.process(lines[i]);
+}
+posdict.clearNNP();
+
+
+var testing = true;
+
 // Start once
-// tweeter();
+tweeter();
 
 // Once every N milliseconds
-// setInterval(tweeter, 60 * 5 * 1000);
+if (testing) {
+  setInterval(tweeter, 1000);
+} else {
+  setInterval(tweeter, 60 * 5 * 1000);
+}
 
 // Here is the bot!
 function tweeter() {
@@ -62,7 +94,9 @@ function tweeter() {
   var hours = d.getUTCHours();
   var minutes = d.getUTCMinutes();
 
-  // Only tweet UTC Thursdays 1am-5am
+
+
+  // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
   if (day == 4 && hours == 0 && minutes > 54) {
@@ -71,7 +105,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours > 6) {
+  if (hours < 1 || hours > 4) {
     live = false;
   }
 
@@ -79,12 +113,13 @@ function tweeter() {
   if (starting) {
     var index = Math.floor(Math.random() * livetweets.length)
     tweet = livetweets[index];
-  } else if (live) {
+  } else if (live | testing) {
     tweet = generateTweet();
     // Make sure nothing offensive
     while (wordfilter.blacklisted(tweet)) {
       tweet = generateTweet();
     }
+    console.log('Tweet: ' + tweet);
 
   }
 
@@ -100,14 +135,14 @@ function generateTweet() {
   var tweet;
 
   var r = Math.random();
-  if (r < 0.33) {
+  if (r < 0.25) {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.66) {
+  } else if (r < 0.5) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
@@ -117,7 +152,7 @@ function generateTweet() {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else {
+  } else if (r < 0.75) {
     console.log('cfg');
     var result = cfg.expand();
     var output = [];
@@ -139,12 +174,52 @@ function generateTweet() {
       }
     }
     tweet = output.join('');
+  } else {
+    var output = [];
+    var index = Math.floor(Math.random() * lines.length);
+    var start = lines[index];
+    console.log(start);
+
+    var tokens = tokenize(start);
+
+    for (var i = 0; i < tokens.length; i++) {
+      var pos = rita.RiTa.getPosTags(tokens[i]);
+      var p = pos[0];
+      var options = posdict.dict[p];
+      if (options) {
+        var r = Math.random();
+        var swap = false;
+
+        // Proper Noun
+        // console.log('pos: ' + p);
+        if (p == 'nnp' && r < 0.8) {
+          swap = true;
+        } else if (r < 0.4) {
+          swap = true;
+        }
+
+        if (swap) {
+          var rindex = Math.floor(Math.random()*options.length)
+          var replace = options[rindex];
+          console.log(pos[0] + ' ' + tokens[i] + ' --> ' + replace);
+          replace = capitalize(tokens[i], replace);
+          output.push(replace);
+        } else {
+          output.push(tokens[i]);
+        }
+      } else {
+        output.push(tokens[i]);
+      }
+    }
+    tweet = output.join('');
   }
 
+  // Need a better way to truncate
   if (tweet.length > 140) {
     tweet = tweet.substring(0, 140);
   }
-  tweet = tweet.replace(/@/, '');
+  // Turn at mentions into hashtags?
+  tweet = tweet.replace(/@/, '#');
   return tweet;
 }
 
