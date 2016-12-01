@@ -14,12 +14,16 @@ function POS() {
   var current = [];
 
   this.clearNNP = function() {
-    var cast = ['David', 'Zeke', 'Hannah', 'Sunday', 'Brett', 'Jay', 'Chris', 'Taylor', 'Jessica', 'Ken', 'Will'];
+    var incast = ['David', 'Zeke', 'Hannah', 'Sunday', 'Brett', 'Jay', 'Ken', 'Will'];
+    var outcast = ['Chris', 'Taylor', 'Jessica', 'Michelle'];
     this.dict['nnp'] = [];
-    for (var i = 0; i < cast.length; i++) {
-      //for (var j = 0; j < 1; j++) {
-      this.dict['nnp'].push(cast[i]);
-      //}
+    for (var i = 0; i < incast.length; i++) {
+      for (var j = 0; j < 5; j++) {
+        this.dict['nnp'].push(incast[i]);
+      }
+    }
+    for (var i = 0; i < outcast.length; i++) {
+      this.dict['nnp'].push(outcast[i]);
     }
   }
 

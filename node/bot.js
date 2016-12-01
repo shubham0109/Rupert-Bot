@@ -73,14 +73,14 @@ for (var i = 0; i < lines.length; i++) {
 posdict.clearNNP();
 
 
-var testing = true;
+var testing = false;
 
 // Start once
 tweeter();
 
 // Once every N milliseconds
 if (testing) {
-  setInterval(tweeter, 1000);
+  setInterval(tweeter, 5000);
 } else {
   setInterval(tweeter, 60 * 5 * 1000);
 }
@@ -108,6 +108,7 @@ function tweeter() {
   if (hours < 1 || hours > 4) {
     live = false;
   }
+  //live = false;
 
   var tweet;
   if (starting) {
@@ -116,33 +117,35 @@ function tweeter() {
   } else if (live | testing) {
     tweet = generateTweet();
     // Make sure nothing offensive
-    while (wordfilter.blacklisted(tweet)) {
+    while (tweet && wordfilter.blacklisted(tweet)) {
       tweet = generateTweet();
     }
     console.log('Tweet: ' + tweet);
 
   }
 
-  if (starting || live) {
-    T.post('statuses/update', {
+  if ((starting || live) && tweet && !testing) {
+    var params = {
       status: tweet
-    }, tweeted);
+    }
+    T.post('statuses/update', params, tweeted);
   }
 
 }
 
-function generateTweet() {
+function generateTweet(name) {
   var tweet;
 
   var r = Math.random();
-  if (r < 0.25) {
+
+  if (r < 0.2) {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.5) {
+  } else if (r < 0.4) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
@@ -152,7 +155,7 @@ function generateTweet() {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.75) {
+  } else if (r < 0.6) {
     console.log('cfg');
     var result = cfg.expand();
     var output = [];
@@ -174,11 +177,12 @@ function generateTweet() {
       }
     }
     tweet = output.join('');
-  } else {
+  } else if (r < 0.8) {
+    console.log('the falconer');
     var output = [];
     var index = Math.floor(Math.random() * lines.length);
     var start = lines[index];
-    console.log(start);
+    console.log('original: ' + start);
 
     var tokens = tokenize(start);
 
@@ -199,9 +203,9 @@ function generateTweet() {
         }
 
         if (swap) {
-          var rindex = Math.floor(Math.random()*options.length)
+          var rindex = Math.floor(Math.random() * options.length)
           var replace = options[rindex];
-          console.log(pos[0] + ' ' + tokens[i] + ' --> ' + replace);
+          // console.log(pos[0] + ' ' + tokens[i] + ' --> ' + replace);
           replace = capitalize(tokens[i], replace);
           output.push(replace);
         } else {
@@ -212,6 +216,10 @@ function generateTweet() {
       }
     }
     tweet = output.join('');
+  } else {
+    console.log('LSTM!');
+    LSTMTweet(140, name);
+    return false;
   }
 
   // Need a better way to truncate
@@ -237,15 +245,19 @@ function followed(event) {
   var screenName = event.source.screen_name;
 
   if (screenName !== 'rupbot') {
-    var tweet = generateTweet();
-    tweet = '@' + screenName + ' ' + tweet;
-    if (tweet.length > 140) {
-      tweet = tweet.substring(0, 140);
-    }
+    var tweet = generateTweet(screenName);
+    if (tweet) {
+      tweet = '@' + screenName + ' ' + tweet;
+      if (tweet.length > 140) {
+        tweet = tweet.substring(0, 140);
+      }
 
-    T.post('statuses/update', {
-      status: tweet
-    }, tweeted);
+      if (!testing) {
+        T.post('statuses/update', {
+          status: tweet
+        }, tweeted);
+      }
+    }
   }
 }
 
@@ -275,28 +287,31 @@ function tweetEvent(tweet) {
     // Get rid of the @ mention
     txt = txt.replace(/@rupbot\s+/g, '');
     console.log('original tweet: ' + txt);
-    generateReply(txt, name, id);
+    LSTMTweet(100, name, txt, id);
 
   }
 }
 
 
-function generateReply(txt, name, id) {
-  var tokens = txt.split(/\W+/);
-  console.log(tokens);
-  var total = Math.floor(Math.random() * 2) + 1;
-  var index = Math.floor(Math.random() * (tokens.length - 1));
-  var primetext = tokens[index] + ' ' + tokens[index + 1];
+function LSTMTweet(len, name, txt, id) {
 
   var spawn = require('child_process').spawn;
 
-  var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.6765.t7_cpu.t7', '-length', '100'];
+  var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.6765.t7_cpu.t7', '-length', len];
   params[4] = '-temperature';
   params[5] = Math.random() * 0.9 + 0.1;
-  params[6] = '-primetext';
-  params[7] = primetext;
-  params[8] = '-seed';
-  params[9] = Math.floor(Math.random() * 1000);
+  params[6] = '-seed';
+  params[7] = Math.floor(Math.random() * 1000);
+  if (!txt) {
+    var rindex = Math.floor(Math.random() * lines.length);
+    txt = lines[rindex];
+  }
+  var tokens = txt.split(/\W+/);
+  var total = Math.floor(Math.random() * 2) + 1;
+  var index = Math.floor(Math.random() * (tokens.length - 1));
+  var primetext = tokens[index] + ' ' + tokens[index + 1];
+  params[8] = '-primetext';
+  params[9] = primetext;
   console.log('temperature: ' + params[5]);
   console.log('prime text: ' + params[7]);
 
@@ -313,19 +328,34 @@ function generateReply(txt, name, id) {
     console.log(results);
 
     // Start a reply back to the sender
-    var replyText = '@' + name + ' ' + results[0];
+    var replyText;
+
+    if (name) {
+      replyText = '@' + name + ' ' + results[0];
+    } else {
+      replyText = results[0];
+    }
 
     if (replyText.length > 140) {
       replyText = replyText.substring(0, 140);
     }
 
-    if (!wordfilter.blacklisted(replyText)) {
+    // First letter capitaliz
+    var c = replyText.charAt(0);
+    replyText = c.toUpperCase() + replyText.substring(1, replyText.length);
 
+    if (!wordfilter.blacklisted(replyText)) {
+      console.log('Tweeting: ' + replyText);
+      var params = {
+        status: replyText
+      }
+      if (id) {
+        params.in_reply_to_status_id = id;
+      }
       // Post that tweet
-      T.post('statuses/update', {
-        status: replyText,
-        in_reply_to_status_id: id
-      }, tweeted);
+      if (!testing) {
+        T.post('statuses/update', params, tweeted);
+      }
     } else {
       console.log('blacklisted: ' + replyText);
     }
