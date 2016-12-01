@@ -308,8 +308,15 @@ function LSTMTweet(len, name, txt, id) {
   }
   var tokens = txt.split(/\W+/);
   var total = Math.floor(Math.random() * 2) + 1;
+  if (tokens.length < 2) {
+    total = 1;
+  }
   var index = Math.floor(Math.random() * (tokens.length - 1));
-  var primetext = tokens[index] + ' ' + tokens[index + 1];
+
+  var primetext = tokens[index];
+  if (total === 2) {
+    primetext += (' ' + tokens[index + 1]);
+  }
   params[8] = '-primetext';
   params[9] = primetext;
   console.log('temperature: ' + params[5]);
@@ -329,6 +336,8 @@ function LSTMTweet(len, name, txt, id) {
 
     // Start a reply back to the sender
     var replyText;
+
+    results[0] = results[0].replace(/@/, '#');
 
     if (name) {
       replyText = '@' + name + ' ' + results[0];
