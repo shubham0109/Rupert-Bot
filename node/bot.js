@@ -54,7 +54,7 @@ for (var i = 0; i < lines.length; i++) {
 }
 posdict.clearNNP();
 
-var testing = true;
+var testing = false;
 
 // Start once
 tweeter();
