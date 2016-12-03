@@ -277,6 +277,7 @@ function LSTMTweet(len, name, txt, id) {
   }
 
   var primetext;
+  console.log(total, tokens);
   if (total === 1) {
     primetext = util.choice(tokens);
   } else {
