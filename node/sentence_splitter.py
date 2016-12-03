@@ -4,7 +4,7 @@ import codecs
 sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
 
 # f = open("rupert.txt")
-f = codecs.open("rupert_reddit.txt", "r", "utf-8")
+f = codecs.open("data/rupert_interviews.txt", "r", "utf-8")
 text = f.read()
 # print(text)
 sentences = sent_detector.tokenize(text)

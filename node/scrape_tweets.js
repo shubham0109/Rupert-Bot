@@ -55,7 +55,8 @@ function gotData(err, data) {
     var id = data[i].id;
     var date = data[i].created_at;
     if (validate(tweet)) {
-      tweets.push(id + '\t' + date + '\t' + tweet);
+      //tweets.push(id + '\t' + date + '\t' + tweet);
+      tweets.push(tweet);
       //console.log(tweet);
     }
   }

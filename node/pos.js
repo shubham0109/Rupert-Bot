@@ -1,10 +1,7 @@
 module.exports = POS;
 
 var rita = require('rita');
-
-function tokenize(s) {
-  return s.split(/([^A-Z0-9'%]+)/i);
-}
+var util = require('./util');
 
 function POS() {
   this.dict = {};
@@ -27,9 +24,8 @@ function POS() {
     }
   }
 
-
   this.process = function(txt) {
-    var words = tokenize(txt);
+    var words = util.tokenize(txt);
     for (var i = 0; i < words.length; i++) {
       var word = words[i];
       if (/\w+/.test(word)) {

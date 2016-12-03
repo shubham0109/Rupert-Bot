@@ -3,23 +3,10 @@
 // http://shiffman.net/a2z
 // https://github.com/shiffman/A2Z-F16
 
-function tokenize(s) {
-  return s.split(/([^A-Z0-9'%]+)/i);
-}
-
-function capitalize(before, after) {
-  if (/^[A-Z]+$/.test(before)) {
-    return after.toUpperCase();
-  } else if (/^[a-z]+$/.test(before)) {
-    return after.toLowerCase();
-  } else if (/^[A-Z][a-z]*$/.test(before)) {
-    var c = after.charAt(0).toUpperCase();
-    return c + after.substring(1, after.length);
-  }
-  return after;
-
-}
-
+var util = require('./util.js');
+var Concordance = require('./concordance.js');
+var MarkovGenerator = require('./markov.js');
+var POS = require('./pos.js');
 
 var wordfilter = require('wordfilter');
 
@@ -39,14 +26,9 @@ var config = require('./config.js');
 // Making a Twit object for connection to the API
 var T = new Twit(config);
 
-
 var fs = require('fs');
 
 var txt = fs.readFileSync('data/rupert.txt', 'utf-8');
-
-var Concordance = require('./concordance.js');
-var MarkovGenerator = require('./markov.js');
-var POS = require('./pos.js');
 
 var wordcounts = new Concordance();
 wordcounts.process(txt);
@@ -72,8 +54,7 @@ for (var i = 0; i < lines.length; i++) {
 }
 posdict.clearNNP();
 
-
-var testing = false;
+var testing = true;
 
 // Start once
 tweeter();
@@ -87,14 +68,14 @@ if (testing) {
 
 // Here is the bot!
 function tweeter() {
+
+  // Live and Starting
   var live = true;
   var starting = false;
   var d = new Date();
   var day = d.getUTCDay();
   var hours = d.getUTCHours();
   var minutes = d.getUTCMinutes();
-
-
 
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
@@ -115,21 +96,19 @@ function tweeter() {
     var index = Math.floor(Math.random() * livetweets.length)
     tweet = livetweets[index];
   } else if (live | testing) {
+    // Tweet undefined if it goes the LSTM route
     tweet = generateTweet();
     // Make sure nothing offensive
     while (tweet && wordfilter.blacklisted(tweet)) {
       tweet = generateTweet();
     }
-    console.log('Tweet: ' + tweet);
-
   }
 
-  if ((starting || live) && tweet && !testing) {
-    var params = {
-      status: tweet
-    }
-    T.post('statuses/update', params, tweeted);
+  // Go ahead
+  if ((starting || live || testing) && tweet) {
+    tweetIt(tweet);
   }
+
 
 }
 
@@ -180,11 +159,10 @@ function generateTweet(name) {
   } else if (r < 0.8) {
     console.log('the falconer');
     var output = [];
-    var index = Math.floor(Math.random() * lines.length);
-    var start = lines[index];
+    var start = util.choice(lines);
     console.log('original: ' + start);
 
-    var tokens = tokenize(start);
+    var tokens = util.tokenize(start);
 
     for (var i = 0; i < tokens.length; i++) {
       var pos = rita.RiTa.getPosTags(tokens[i]);
@@ -203,10 +181,9 @@ function generateTweet(name) {
         }
 
         if (swap) {
-          var rindex = Math.floor(Math.random() * options.length)
-          var replace = options[rindex];
+          var replace = util.choice(options);
           // console.log(pos[0] + ' ' + tokens[i] + ' --> ' + replace);
-          replace = capitalize(tokens[i], replace);
+          replace = util.capitalize(tokens[i], replace);
           output.push(replace);
         } else {
           output.push(tokens[i]);
@@ -222,10 +199,6 @@ function generateTweet(name) {
     return false;
   }
 
-  // Need a better way to truncate
-  if (tweet.length > 140) {
-    tweet = tweet.substring(0, 140);
-  }
   // Turn at mentions into hashtags?
   tweet = tweet.replace(/@/, '#');
   return tweet;
@@ -248,15 +221,7 @@ function followed(event) {
     var tweet = generateTweet(screenName);
     if (tweet) {
       tweet = '@' + screenName + ' ' + tweet;
-      if (tweet.length > 140) {
-        tweet = tweet.substring(0, 140);
-      }
-
-      if (!testing) {
-        T.post('statuses/update', {
-          status: tweet
-        }, tweeted);
-      }
+      tweetIt(tweet);
     }
   }
 }
@@ -297,30 +262,34 @@ function LSTMTweet(len, name, txt, id) {
 
   var spawn = require('child_process').spawn;
 
-  var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.6765.t7_cpu.t7', '-length', len];
+  var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.5083.t7_cpu.t7', '-length', len];
   params[4] = '-temperature';
   params[5] = Math.random() * 0.9 + 0.1;
   params[6] = '-seed';
   params[7] = Math.floor(Math.random() * 1000);
   if (!txt) {
-    var rindex = Math.floor(Math.random() * lines.length);
-    txt = lines[rindex];
+    txt = util.choice(lines);
   }
   var tokens = txt.split(/\W+/);
   var total = Math.floor(Math.random() * 2) + 1;
   if (tokens.length < 2) {
     total = 1;
   }
-  var index = Math.floor(Math.random() * (tokens.length - 1));
 
-  var primetext = tokens[index];
-  if (total === 2) {
+  var primetext;
+  if (total === 1) {
+    primetext = util.choice(tokens);
+  } else {
+    // Can't pick the very last one
+    var index = Math.floor(Math.random() * (tokens.length - 1));
+    primetext = tokens[index];
     primetext += (' ' + tokens[index + 1]);
   }
+
   params[8] = '-primetext';
   params[9] = primetext;
   console.log('temperature: ' + params[5]);
-  console.log('prime text: ' + params[7]);
+  console.log('prime text: ' + params[9]);
 
   var proc = spawn('th', params);
   proc.stdout.on('data', reply);
@@ -332,7 +301,6 @@ function LSTMTweet(len, name, txt, id) {
 
   function reply(data) {
     var results = data.toString().split(/\n+/);
-    console.log(results);
 
     // Start a reply back to the sender
     var replyText;
@@ -345,29 +313,35 @@ function LSTMTweet(len, name, txt, id) {
       replyText = results[0];
     }
 
-    if (replyText.length > 140) {
-      replyText = replyText.substring(0, 140);
+    // Post that tweet
+    tweetIt(replyText, id);
+  }
+}
+
+
+function tweetIt(tweet, replyid) {
+  var c = tweet.charAt(0);
+  tweet = c.toUpperCase() + tweet.substring(1, tweet.length);
+
+  // truncate
+  if (tweet.length > 140) {
+    console.log('truncating');
+    tweet = util.truncate(tweet, 140);
+  }
+
+  if (!wordfilter.blacklisted(tweet)) {
+    var params = {};
+    params.status = tweet;
+    if (replyid) {
+      params.in_reply_to_status_id = replyid;
     }
-
-    // First letter capitaliz
-    var c = replyText.charAt(0);
-    replyText = c.toUpperCase() + replyText.substring(1, replyText.length);
-
-    if (!wordfilter.blacklisted(replyText)) {
-      console.log('Tweeting: ' + replyText);
-      var params = {
-        status: replyText
-      }
-      if (id) {
-        params.in_reply_to_status_id = id;
-      }
-      // Post that tweet
-      if (!testing) {
-        T.post('statuses/update', params, tweeted);
-      }
+    if (!testing) {
+      T.post('statuses/update', params, tweeted);
     } else {
-      console.log('blacklisted: ' + replyText);
+      console.log("Testing: " + tweet)
     }
+  } else {
+    console.log("blacklisted: " + tweet);
   }
 }
 
