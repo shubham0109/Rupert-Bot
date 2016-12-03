@@ -308,12 +308,12 @@ function LSTMTweet(len, name, txt, id) {
     var replyText;
 
     // hack to stop mistakes
-    if (/Missing seed text/.test(results[0]) {
+    if (/Missing seed text/.test(results[0])) {
       console.log('missing seed text');
       return;
     }
 
-    if (/----/.test(results[0]) {
+    if (/----/.test(results[0])) {
       console.log('---------------- error');
       return;
     }
