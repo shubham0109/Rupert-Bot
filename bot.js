@@ -3,10 +3,11 @@
 // http://shiffman.net/a2z
 // https://github.com/shiffman/A2Z-F16
 
-var util = require('./util.js');
-var Concordance = require('./concordance.js');
-var MarkovGenerator = require('./markov.js');
-var POS = require('./pos.js');
+var util = require('./lib/util.js');
+var Concordance = require('./lib/concordance.js');
+var MarkovGenerator = require('./lib/markov.js');
+var POS = require('./lib/pos.js');
+var CFG = require('./lib/cfg.js');
 
 var wordfilter = require('wordfilter');
 
@@ -43,7 +44,6 @@ for (var i = 0; i < lines.length; i++) {
   markov.feed(lines[i]);
 }
 
-var CFG = require('./cfg');
 var cfg = new CFG();
 cfg.initGrammar();
 cfg.addWords(wordcounts);
@@ -174,9 +174,9 @@ function generateTweet(name) {
 
         // Proper Noun
         // console.log('pos: ' + p);
-        if (p == 'nnp' && r < 0.8) {
+        if (p == 'nnp' && r < 0.7) {
           swap = true;
-        } else if (r < 0.4) {
+        } else if (r < 0.3) {
           swap = true;
         }
 
