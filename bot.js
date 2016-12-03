@@ -321,8 +321,10 @@ function LSTMTweet(len, name, txt, id) {
 
 
 function tweetIt(tweet, replyid) {
+  console.log('lower: ' + tweet);
   var c = tweet.charAt(0);
   tweet = c.toUpperCase() + tweet.substring(1, tweet.length);
+  console.log('upper: ' + tweet);
 
   // truncate
   if (tweet.length > 140) {
