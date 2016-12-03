@@ -270,7 +270,7 @@ function LSTMTweet(len, name, txt, id) {
   if (!txt) {
     txt = util.choice(lines);
   }
-  var tokens = txt.split(/\W+/);
+  var tokens = txt.split(/[^A-Z']+/i);
   var total = Math.floor(Math.random() * 2) + 1;
   if (tokens.length < 2) {
     total = 1;
