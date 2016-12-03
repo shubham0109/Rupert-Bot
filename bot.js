@@ -307,6 +307,18 @@ function LSTMTweet(len, name, txt, id) {
     // Start a reply back to the sender
     var replyText;
 
+    // hack to stop mistakes
+    if (/Missing seed text/.test(results[0]) {
+      console.log('missing seed text');
+      return;
+    }
+
+    if (/----/.test(results[0]) {
+      console.log('---------------- error');
+      return;
+    }
+
+
     results[0] = results[0].replace(/@/, '#');
 
     if (name) {
