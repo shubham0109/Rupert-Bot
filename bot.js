@@ -277,11 +277,11 @@ function LSTMTweet(len, name, txt, id) {
     total = 1;
   }
 
-  var primetext;
+  var primetext = 'Survivor';
   console.log(total, tokens);
-  if (total === 1) {
+  if (total === 1 && tokens.length > 0) {
     primetext = util.choice(tokens);
-  } else {
+  } else if (total === 2){
     // Can't pick the very last one
     var index = Math.floor(Math.random() * (tokens.length - 1));
     primetext = tokens[index];
