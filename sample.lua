@@ -126,8 +126,8 @@ if string.len(seed_text) > 0 then
     end
 else
     -- fill with uniform probabilities over characters (? hmm)
-    gprint('missing seed text, using uniform probability over first character')
-    gprint('--------------------------')
+    -- gprint('missing seed text, using uniform probability over first character')
+    -- gprint('--------------------------')
     prediction = torch.Tensor(1, #ivocab):fill(1)/(#ivocab)
     if opt.gpuid >= 0 and opt.opencl == 0 then prediction = prediction:cuda() end
     if opt.gpuid >= 0 and opt.opencl == 1 then prediction = prediction:cl() end

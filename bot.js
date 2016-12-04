@@ -270,7 +270,8 @@ function LSTMTweet(len, name, txt, id) {
   if (!txt) {
     txt = util.choice(lines);
   }
-  var tokens = txt.split(/[^A-Z']+/i);
+  var tokens = txt.split(/[^A-Z'@]+/i);
+  util.cleanAll(tokens);
   var total = Math.floor(Math.random() * 2) + 1;
   if (tokens.length < 2) {
     total = 1;
@@ -278,7 +279,6 @@ function LSTMTweet(len, name, txt, id) {
 
   var primetext;
   console.log(total, tokens);
-  util.clean(tokens);
   if (total === 1) {
     primetext = util.choice(tokens);
   } else {
