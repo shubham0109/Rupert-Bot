@@ -91,7 +91,7 @@ function tweeter() {
   if (hours < 1 || hours > 4) {
     live = false;
   }
-  live = true;
+  // live = true;
 
   var tweet;
   if (starting) {
