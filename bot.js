@@ -56,7 +56,7 @@ for (var i = 0; i < lines.length; i++) {
 }
 posdict.clearNNP();
 
-var testing = true;
+var testing = false;
 
 // Start once
 tweeter();
@@ -91,7 +91,7 @@ function tweeter() {
   if (hours < 1 || hours > 4) {
     live = false;
   }
-  //live = false;
+  live = true;
 
   var tweet;
   if (starting) {
@@ -189,9 +189,9 @@ function generateTweet(name) {
           // Proper Noun
           // console.log('pos: ' + p);
           if (pos == 'PERSON' && r < 0.7) {
-            swap = true;
+            // swap = true;
           } else if (r < 0.3) {
-            swap = true;
+            // swap = true;
           }
 
           // Hack to deal with contraction problem right now
@@ -213,8 +213,12 @@ function generateTweet(name) {
         output.push(tokens[i].after);
       }
     }
-    console.log(output.length);
     tweet = output.join('');
+    tweet = tweet.replace(/’/,"'");
+    if (tweet.trim() == start.trim()) {
+      console.log('duplicate');
+      return generateTweet();
+    }
   } else {
     console.log('LSTM!');
     LSTMTweet(150, name);
@@ -368,7 +372,7 @@ function tweetIt(tweet, replyid) {
   }
 
   // Some hacks to make it more relevant to this season
-  tweet = tweet.replace('survivorsanjuandelsur', 'SurvivorMillennialsVsGenX')
+  tweet = tweet.replace(/survivorsanjuandelsur/gi, 'SurvivorMillennialsVsGenX')
 
   // truncate
   if (tweet.length > 140) {
