@@ -1,21 +1,11 @@
-// var StanfordSimpleNLP = require('stanford-simple-nlp');
 //
-// var stanfordSimpleNLP = new StanfordSimpleNLP.StanfordSimpleNLP();
-// stanfordSimpleNLP.loadPipelineSync();
-// console.log("about to process");
-// var result = stanfordSimpleNLP.process('Rupert went to Paris and had a good time. #hashtag', processed);
-// console.log(result);
-// function processed(err, result) {
-//   console.log(err);
-//   console.log("mid-process");
-//   var fs = require('fs');
-//   var json = JSON.stringify(result, null, 2);
-//   fs.writeFile("corenlp.json", json);
-// }
-// console.log("finished process");
+// var util = require('./lib/util');
 //
-// // var java = require('java');
-// // java.newInstanceSync("java.lang.String");
+// var tweet = "Good move by Brenda, or uncomfortable? #survivor"
+// tweet = util.truncate(tweet, 10);
+// console.log(tweet);
+
+
 
 var corenlp = require("corenlp-js-interface");
 // corenlp.port = 9000;
@@ -23,17 +13,20 @@ var corenlp = require("corenlp-js-interface");
 // corenlp.format = "json";
 // corenlp.parseJson = true;
 
-var tweet = "This is a test tweet from Bob vacationing in Paris. #Survivor"
+var tweet = "I can't"
 
 // annotators: ['tokenize', 'ssplit', 'pos', 'lemma', 'ner', 'parse', 'dcoref']
-
 //var text = corenlp(tweet, 9000, "parse,tokenize,ssplit,ner,pos", "json");
 var text = corenlp(tweet, 9000, "ner,pos", "json");
+//var text = corenlp(tweet, 9000, "parse,ner,pos", "json");
 text = text.replace(/\n+/g, '');
 var result = JSON.parse(text);
-var fs = require('fs');
-var output = JSON.stringify(result, null, 2);
-fs.writeFile("corenlp.json", output, finished);
-function finished() {
-  
-}
+console.log(result.sentences[0].tokens);
+
+
+// var fs = require('fs');
+// var output = JSON.stringify(result, null, 2);
+// fs.writeFile("corenlp.json", output, finished);
+// function finished() {
+//
+// }

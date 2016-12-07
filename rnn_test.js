@@ -7,7 +7,7 @@ var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.5083.t7_cpu.t7', '-length'
 params[4] = '-temperature';
 params[5] = Math.random()*0.9 + 0.1;
 params[6] = '-primetext';
-params[7] = 'flawed 🙉';
+params[7] = 'college football';
 params[8] = '-seed';
 params[9] = Math.floor(Math.random()*1000);
 //console.log(params[5]);
