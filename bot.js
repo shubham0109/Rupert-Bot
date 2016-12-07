@@ -51,6 +51,7 @@ cfg.addWords(wordcounts);
 
 posdict = new POS();
 for (var i = 0; i < lines.length; i++) {
+  console.log(i + '/' + lines.length);
   posdict.process(lines[i]);
 }
 posdict.clearNNP();
