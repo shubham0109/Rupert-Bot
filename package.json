@@ -9,11 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "corenlp-js-interface": "^1.0.3",
     "fb": "^1.1.1",
     "request": "^2.79.0",
     "rita": "^1.1.51",
-    "snoowrap": "^1.11.3",
-    "spacy-nlp": "^1.0.7",
     "twit": "^2.1.1",
     "wordfilter": "^0.2.6"
   }
