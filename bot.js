@@ -188,9 +188,9 @@ function generateTweet(name) {
 
           // Proper Noun
           // console.log('pos: ' + p);
-          if (pos == 'PERSON' && r < 0.7) {
+          if (pos == 'PERSON' && r < 0.8) {
             swap = true;
-          } else if (r < 0.3) {
+          } else if (r < 0.2) {
             swap = true;
           }
 
