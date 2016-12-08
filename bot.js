@@ -88,7 +88,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 17 || hours > 18) {
+  if (hours < 17 || hours > 19) {
     live = false;
   }
   // live = true;
