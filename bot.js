@@ -173,10 +173,12 @@ function generateTweet(name) {
     for (var k = 0; k < nlp.sentences.length; k++) {
       var tokens = nlp.sentences[k].tokens;
       for (var i = 0; i < tokens.length; i++) {
+        var ner = false;
         var pos = tokens[i].pos;
         var word = tokens[i].originalText;
         if (tokens[i].ner != "O") {
           pos = tokens[i].ner;
+          ner = true;
         }
         if (/^#.*?/.test(word)) {
           pos = 'HASHTAG';
@@ -188,14 +190,15 @@ function generateTweet(name) {
 
           // Proper Noun
           // console.log('pos: ' + p);
-          if (pos == 'PERSON' && r < 0.8) {
+          if ((r < 0.8) && (ner || pos == 'HASHTAG')) {
             swap = true;
-          } else if (r < 0.2) {
+          } else if ((r < 0.4) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
+            swap = true;
+          } else if (r < 0.1) {
             swap = true;
           }
-
           // Hack to deal with contraction problem right now
-          if (pos == 'MD' || pos == 'RB' || pos == "''" ) {
+          if (pos == 'MD' || pos == 'RB' || pos == "''") {
             swap = false;
           }
 
@@ -214,7 +217,7 @@ function generateTweet(name) {
       }
     }
     tweet = output.join('');
-    tweet = tweet.replace(/’/,"'");
+    tweet = tweet.replace(/’/, "'");
     if (tweet.trim() == start.trim()) {
       console.log('duplicate');
       return generateTweet();
