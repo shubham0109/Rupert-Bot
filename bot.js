@@ -88,7 +88,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours > 4) {
+  if (hours < 17 || hours > 17) {
     live = false;
   }
   // live = true;
@@ -119,14 +119,14 @@ function generateTweet(name) {
 
   var r = Math.random();
 
-  if (r < 0.2) {
+  if (r < 0.1) {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.4) {
+  } else if (r < 0.2) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
@@ -136,7 +136,7 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.6) {
+  } else if (r < 0.3) {
     console.log('cfg');
     var result = cfg.expand();
     var output = [];
@@ -158,7 +158,7 @@ function generateTweet(name) {
       }
     }
     tweet = output.join('');
-  } else if (r < 0.8) {
+  } else if (r < 0.9) {
     console.log('the falconer');
     var output = [];
     console.log(lines.length);
@@ -189,9 +189,9 @@ function generateTweet(name) {
           // Proper Noun
           // console.log('pos: ' + p);
           if (pos == 'PERSON' && r < 0.7) {
-            // swap = true;
+            swap = true;
           } else if (r < 0.3) {
-            // swap = true;
+            swap = true;
           }
 
           // Hack to deal with contraction problem right now
