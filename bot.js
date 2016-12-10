@@ -3,6 +3,9 @@
 // http://shiffman.net/a2z
 // https://github.com/shiffman/A2Z-F16
 
+// Run
+// java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer
+
 var util = require('./lib/util.js');
 var Concordance = require('./lib/concordance.js');
 var MarkovGenerator = require('./lib/markov.js');
@@ -88,7 +91,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 17 || hours > 19) {
+  if (hours < 1 || hours > 6) {
     live = false;
   }
   // live = true;
@@ -163,6 +166,12 @@ function generateTweet(name) {
     var output = [];
     console.log(lines.length);
     var start = util.choice(lines);
+
+    // Protect against empty tweets
+    while (start.length < 1) {
+      start = util.choice(lines);
+    }
+
     console.log('original: ' + start);
 
     // var tokens = util.tokenize(start);
@@ -170,58 +179,69 @@ function generateTweet(name) {
     result = result.replace(/\n+/g, '');
     var nlp = JSON.parse(result);
 
-    for (var k = 0; k < nlp.sentences.length; k++) {
-      var tokens = nlp.sentences[k].tokens;
-      for (var i = 0; i < tokens.length; i++) {
-        var ner = false;
-        var pos = tokens[i].pos;
-        var word = tokens[i].originalText;
-        if (tokens[i].ner != "O") {
-          pos = tokens[i].ner;
-          ner = true;
-        }
-        if (/^#.*?/.test(word)) {
-          pos = 'HASHTAG';
-        }
-        var options = posdict.dict[pos];
-        if (options) {
-          var r = Math.random();
-          var swap = false;
+    var allgood = false;
 
-          // Proper Noun
-          // console.log('pos: ' + p);
-          if ((r < 0.8) && (ner || pos == 'HASHTAG')) {
-            swap = true;
-          } else if ((r < 0.4) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
-            swap = true;
-          } else if (r < 0.1) {
-            swap = true;
-          }
-          // Hack to deal with contraction problem right now
-          if (pos == 'MD' || pos == 'RB' || pos == "''") {
-            swap = false;
-          }
+    while (!allgood) {
 
-          if (swap) {
-            var replace = util.choice(options);
-            replace = util.capitalize(word, replace);
-            console.log(pos + ' ' + word + ' --> ' + replace);
-            output.push(replace);
+      output = [];
+
+      for (var k = 0; k < nlp.sentences.length; k++) {
+        var tokens = nlp.sentences[k].tokens;
+        for (var i = 0; i < tokens.length; i++) {
+          var ner = false;
+          var pos = tokens[i].pos;
+          var word = tokens[i].originalText;
+          if (tokens[i].ner != "O") {
+            pos = tokens[i].ner;
+            ner = true;
+          }
+          if (/^#.*?/.test(word)) {
+            pos = 'HASHTAG';
+          }
+          var options = posdict.dict[pos];
+          if (options) {
+            var r = Math.random();
+            var swap = false;
+
+            // Proper Noun
+            // console.log('pos: ' + p);
+            if ((r < 0.8) && ner) {
+              swap = true;
+              allgood = true;
+            } else if ((r < 0.4) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD' || pos == 'HASHTAG')) {
+              swap = true;
+              allgood = true;
+            } else if (r < 0.1) {
+              swap = true;
+            }
+            // Hack to deal with contraction problem right now
+            if (pos == 'MD' || pos == 'RB' || pos == "''") {
+              swap = false;
+            }
+
+            if (swap) {
+              var replace = util.choice(options);
+              replace = util.capitalize(word, replace);
+              console.log(pos + ' ' + word + ' --> ' + replace);
+              if (pos == replace) {
+                allgood = false;
+              }
+              output.push(replace);
+            } else {
+              output.push(word);
+            }
           } else {
             output.push(word);
           }
-        } else {
-          output.push(word);
+          output.push(tokens[i].after);
         }
-        output.push(tokens[i].after);
+      }
+      if (!allgood) {
+        console.log('not enough swapping, trying again.');
       }
     }
     tweet = output.join('');
     tweet = tweet.replace(/’/, "'");
-    if (tweet.trim() == start.trim()) {
-      console.log('duplicate');
-      return generateTweet();
-    }
   } else {
     console.log('LSTM!');
     LSTMTweet(150, name);
@@ -282,7 +302,6 @@ function tweetEvent(tweet) {
     txt = txt.replace(/@rupbot\s+/g, '');
     console.log('original tweet: ' + txt);
     LSTMTweet(150, name, txt, id);
-
   }
 }
 
@@ -299,6 +318,35 @@ function LSTMTweet(len, name, txt, id) {
   if (!txt) {
     txt = util.choice(lines);
   }
+
+  // Remove any URLS
+  txt = txt.replace(/http.*?(\s|$)/g,'');
+
+  // Try some NLP
+  var result = corenlp(txt, 9000, "ner,pos", "json");
+  result = result.replace(/\n+/g, '');
+  var nlp = JSON.parse(result);
+
+
+  var options = [];
+  for (var k = 0; k < nlp.sentences.length; k++) {
+    var tokens = nlp.sentences[k].tokens;
+    for (var i = 0; i < tokens.length; i++) {
+      var pos = tokens[i].pos;
+      var ner = tokens[i].ner;
+      var word = tokens[i].originalText;
+      if (ner == "PERSON") {
+        for (var again = 0; again < 5; again++) options.push(word);
+      } else if (/^#.*?/.test(word)) {
+        // do nothing
+      } else if (pos == 'NN' || pos == 'NNS') {
+        options.push(word);
+      }
+    }
+  }
+  console.log(options);
+
+
   var tokens = txt.split(/[^A-Z'@]+/i);
   util.cleanAll(tokens);
   var total = Math.floor(Math.random() * 2) + 1;
@@ -308,13 +356,21 @@ function LSTMTweet(len, name, txt, id) {
 
   var primetext = 'Survivor';
   //console.log(total, tokens);
-  if (total === 1 && tokens.length > 0) {
-    primetext = util.choice(tokens);
-  } else if (total === 2) {
-    // Can't pick the very last one
-    var index = Math.floor(Math.random() * (tokens.length - 1));
-    primetext = tokens[index];
-    primetext += (' ' + tokens[index + 1]);
+  if (options.length > 0) {
+    if (total === 1) {
+      primetext = util.choice(options);
+    } else {
+      var pickone = util.choice(options);
+      for (var find = 0; find < tokens.length; find++) {
+        if (tokens[find] == pickone && find < tokens.length-1) {
+          primetext = pickone + ' ' + tokens[find+1];
+        } else {
+          primetext = tokens[find-1] + ' ' + pickone;
+        }
+      }
+    }
+  } else {
+    primetext = tokens.join(' ');
   }
 
   params[8] = '-primetext';
