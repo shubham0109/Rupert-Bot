@@ -33,7 +33,7 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
-var txt = fs.readFileSync('data/rupert.txt', 'utf-8');
+var txt = fs.readFileSync('data/rupert_test.txt', 'utf-8');
 
 var wordcounts = new Concordance();
 wordcounts.process(txt);
@@ -59,10 +59,11 @@ for (var i = 0; i < lines.length; i++) {
 }
 posdict.clearNNP();
 
-var testing = false;
+var testing = true;
 
 // Start once
-tweeter();
+// tweeter();
+LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
 
 // Once every N milliseconds
 if (testing) {
@@ -337,7 +338,7 @@ function LSTMTweet(len, name, txt, id) {
       var word = tokens[i].originalText;
       if (ner == "PERSON") {
         for (var again = 0; again < 5; again++) options.push(word);
-      } else if (/^#.*?/.test(word)) {
+      } else if (/^[#@].*?/.test(word)) {
         // do nothing
       } else if (pos == 'NN' || pos == 'NNS') {
         options.push(word);
