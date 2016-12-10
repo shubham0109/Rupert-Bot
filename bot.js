@@ -61,13 +61,15 @@ posdict.clearNNP();
 
 var testing = true;
 
+// Testing reply picking algorithm
+// LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
+
 // Start once
 // tweeter();
-LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
 
 // Once every N milliseconds
 if (testing) {
-  setInterval(tweeter, 5000);
+  // setInterval(tweeter, 5000);
 } else {
   setInterval(tweeter, 60 * 5 * 1000);
 }
@@ -164,7 +166,6 @@ function generateTweet(name) {
     tweet = output.join('');
   } else if (r < 1) {
     console.log('the falconer');
-    var output = [];
     console.log(lines.length);
     var start = util.choice(lines);
 
@@ -173,76 +174,7 @@ function generateTweet(name) {
       start = util.choice(lines);
     }
 
-    console.log('original: ' + start);
-
-    // var tokens = util.tokenize(start);
-    var result = corenlp(start, 9000, "ner,pos", "json");
-    result = result.replace(/\n+/g, '');
-    var nlp = JSON.parse(result);
-
-    var allgood = false;
-
-    while (!allgood) {
-
-      output = [];
-
-      for (var k = 0; k < nlp.sentences.length; k++) {
-        var tokens = nlp.sentences[k].tokens;
-        for (var i = 0; i < tokens.length; i++) {
-          var ner = false;
-          var pos = tokens[i].pos;
-          var word = tokens[i].originalText;
-          if (tokens[i].ner != "O") {
-            pos = tokens[i].ner;
-            ner = true;
-          }
-          if (/^#.*?/.test(word)) {
-            pos = 'HASHTAG';
-          }
-          var options = posdict.dict[pos];
-          if (options) {
-            var r = Math.random();
-            var swap = false;
-
-            // Proper Noun
-            // console.log('pos: ' + p);
-            if ((r < 0.8) && ner) {
-              swap = true;
-              allgood = true;
-            } else if ((r < 0.4) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD' || pos == 'HASHTAG')) {
-              swap = true;
-              allgood = true;
-            } else if (r < 0.1) {
-              swap = true;
-            }
-            // Hack to deal with contraction problem right now
-            if (pos == 'MD' || pos == 'RB' || pos == "''") {
-              swap = false;
-            }
-
-            if (swap) {
-              var replace = util.choice(options);
-              replace = util.capitalize(word, replace);
-              console.log(pos + ' ' + word + ' --> ' + replace);
-              if (pos == replace) {
-                allgood = false;
-              }
-              output.push(replace);
-            } else {
-              output.push(word);
-            }
-          } else {
-            output.push(word);
-          }
-          output.push(tokens[i].after);
-        }
-      }
-      if (!allgood) {
-        console.log('not enough swapping, trying again.');
-      }
-    }
-    tweet = output.join('');
-    tweet = tweet.replace(/’/, "'");
+    tweet = falconer(start);
   } else {
     console.log('LSTM!');
     LSTMTweet(150, name);
@@ -285,20 +217,43 @@ function tweetEvent(tweet) {
   // to look more closely at the data
   // var fs = require('fs');
   // var json = JSON.stringify(tweet,null,2);
-  // fs.writeFile("tweet.json", json, output);
+  // fs.writeFile("tweet" + new Date().toString() + ".json", json);
 
   // Who is this in reply to?
-  var reply_to = tweet.in_reply_to_screen_name;
+  // var reply_to = tweet.in_reply_to_screen_name;
+  var mentioned = false;
+  var mentions = tweet.entities.user_mentions;
+  for (var i = 0; i < mentions.length; i++) {
+    if (mentions[i].screen_name == 'rupbot') {
+      mentioned = true;
+    }
+  }
+
   // Who sent the tweet?
   var name = tweet.user.screen_name;
+
   // What is the text?
   var txt = tweet.text;
   // If we want the conversation thread
   var id = tweet.id_str;
 
+  //if (name.toLowerCase() == 'rupertboneham') {
+  if (name.toLowerCase() == 'rupertboneham') {
+    console.log('Original rupert: ' + txt);
+    var ruperttweet = falconer(txt);
+    if (ruperttweet === undefined) {
+      console.log('rupert tweet fail');
+      return;
+    }
+    console.log('New Rupert: ' + ruperttweet);
+    tweetIt(ruperttweet);
+    return;
+  }
+
+
   // Ok, if this was in reply to me
   // Tweets by me show up here too
-  if (name !== 'rupbot' && reply_to === 'rupbot') {
+  if (name !== 'rupbot' && mentioned) {
     // Get rid of the @ mention
     txt = txt.replace(/@rupbot\s+/g, '');
     console.log('original tweet: ' + txt);
@@ -468,4 +423,85 @@ function tweeted(err, data, response) {
     console.log('Success: ' + data.text);
     //console.log(response);
   }
+}
+
+function falconer(start) {
+  console.log('original: ' + start);
+  var output = [];
+
+  // var tokens = util.tokenize(start);
+  var result = corenlp(start, 9000, "ner,pos", "json");
+  result = result.replace(/\n+/g, '');
+  var nlp = JSON.parse(result);
+
+  var allgood = false;
+  var protection = 0;
+
+  while (!allgood && protection < 100) {
+
+    output = [];
+
+    for (var k = 0; k < nlp.sentences.length; k++) {
+      var tokens = nlp.sentences[k].tokens;
+      for (var i = 0; i < tokens.length; i++) {
+        var ner = false;
+        var pos = tokens[i].pos;
+        var word = tokens[i].originalText;
+        if (tokens[i].ner != "O") {
+          pos = tokens[i].ner;
+          ner = true;
+        }
+        if (/^#.*?/.test(word)) {
+          pos = 'HASHTAG';
+        }
+        var options = posdict.dict[pos];
+        if (options) {
+          var r = Math.random();
+          var swap = false;
+
+          // Proper Noun
+          // console.log('pos: ' + p);
+          if ((r < 0.8) && ner) {
+            swap = true;
+            allgood = true;
+          } else if ((r < 0.4) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD' || pos == 'HASHTAG')) {
+            swap = true;
+            allgood = true;
+          } else if (r < 0.1) {
+            swap = true;
+          }
+          // Hack to deal with contraction problem right now
+          if (pos == 'MD' || pos == 'RB' || pos == "''") {
+            swap = false;
+          }
+
+          if (swap) {
+            var replace = util.choice(options);
+            replace = util.capitalize(word, replace);
+            console.log(pos + ' ' + word + ' --> ' + replace);
+            if (pos == replace) {
+              allgood = false;
+            }
+            output.push(replace);
+          } else {
+            output.push(word);
+          }
+        } else {
+          output.push(word);
+        }
+        output.push(tokens[i].after);
+      }
+    }
+    if (!allgood) {
+      console.log('not enough swapping, trying again.');
+      protection++;
+    }
+  }
+
+  if (protection >= 100) {
+    return undefined;
+  }
+  var tweet = output.join('');
+  tweet = tweet.replace(/’/, "'");
+  return tweet;
 }
