@@ -1,0 +1,101 @@
+{
+  "created_at": "Sat Dec 10 22:56:38 +0000 2016",
+  "id": 807720708994461700,
+  "id_str": "807720708994461701",
+  "text": "@SurvivorStick Jonny Foremm in #Survivor #SurvivorWorldsApart",
+  "display_text_range": [
+    15,
+    61
+  ],
+  "source": "<a href=\"https://github.com/shiffman/Rupert-Bot\" rel=\"nofollow\">Rupert Bot</a>",
+  "truncated": false,
+  "in_reply_to_status_id": 807720706653950000,
+  "in_reply_to_status_id_str": "807720706653949952",
+  "in_reply_to_user_id": 704638493130137600,
+  "in_reply_to_user_id_str": "704638493130137600",
+  "in_reply_to_screen_name": "SurvivorStick",
+  "user": {
+    "id": 801476093106651100,
+    "id_str": "801476093106651136",
+    "name": "Rupert Botham",
+    "screen_name": "rupbot",
+    "location": "Survivor Island",
+    "url": "https://github.com/shiffman/Rupert-Bot",
+    "description": "Tweets, baby, tweets. RupBot tweets. They're better than something that happened on #Survivor. RupBot tweets.",
+    "protected": false,
+    "verified": false,
+    "followers_count": 554,
+    "friends_count": 106,
+    "listed_count": 10,
+    "favourites_count": 45,
+    "statuses_count": 1245,
+    "created_at": "Wed Nov 23 17:22:46 +0000 2016",
+    "utc_offset": null,
+    "time_zone": null,
+    "geo_enabled": false,
+    "lang": "en",
+    "contributors_enabled": false,
+    "is_translator": false,
+    "profile_background_color": "F5F8FA",
+    "profile_background_image_url": "",
+    "profile_background_image_url_https": "",
+    "profile_background_tile": false,
+    "profile_link_color": "1DA1F2",
+    "profile_sidebar_border_color": "C0DEED",
+    "profile_sidebar_fill_color": "DDEEF6",
+    "profile_text_color": "333333",
+    "profile_use_background_image": true,
+    "profile_image_url": "http://pbs.twimg.com/profile_images/801489648182644737/_Mc-zcqk_normal.jpg",
+    "profile_image_url_https": "https://pbs.twimg.com/profile_images/801489648182644737/_Mc-zcqk_normal.jpg",
+    "profile_banner_url": "https://pbs.twimg.com/profile_banners/801476093106651136/1479925112",
+    "default_profile": true,
+    "default_profile_image": false,
+    "following": null,
+    "follow_request_sent": null,
+    "notifications": null
+  },
+  "geo": null,
+  "coordinates": null,
+  "place": null,
+  "contributors": null,
+  "is_quote_status": false,
+  "retweet_count": 0,
+  "favorite_count": 0,
+  "entities": {
+    "hashtags": [
+      {
+        "text": "Survivor",
+        "indices": [
+          31,
+          40
+        ]
+      },
+      {
+        "text": "SurvivorWorldsApart",
+        "indices": [
+          41,
+          61
+        ]
+      }
+    ],
+    "urls": [],
+    "user_mentions": [
+      {
+        "screen_name": "SurvivorStick",
+        "name": "Survivor Stick",
+        "id": 704638493130137600,
+        "id_str": "704638493130137600",
+        "indices": [
+          0,
+          14
+        ]
+      }
+    ],
+    "symbols": []
+  },
+  "favorited": false,
+  "retweeted": false,
+  "filter_level": "low",
+  "lang": "en",
+  "timestamp_ms": "1481410598406"
+}

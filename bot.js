@@ -240,7 +240,7 @@ function tweetEvent(tweet) {
   //if (name.toLowerCase() == 'rupertboneham') {
   if (name.toLowerCase() == 'jordankalish') {
     console.log('Original rupert: ' + txt);
-    var ruperttweet = falconer(txt);
+    var ruperttweet = falconer(txt, 0.1);
     if (ruperttweet === undefined) {
       console.log('rupert tweet fail');
       return;
@@ -276,7 +276,7 @@ function LSTMTweet(len, name, txt, id) {
   }
 
   // Remove any URLS
-  txt = txt.replace(/http.*?(\s|$)/g,'');
+  txt = txt.replace(/http.*?(\s|$)/g, '');
 
   // Try some NLP
   var result = corenlp(txt, 9000, "ner,pos", "json");
@@ -318,10 +318,10 @@ function LSTMTweet(len, name, txt, id) {
     } else {
       var pickone = util.choice(options);
       for (var find = 0; find < tokens.length; find++) {
-        if (tokens[find] == pickone && find < tokens.length-1) {
-          primetext = pickone + ' ' + tokens[find+1];
+        if (tokens[find] == pickone && find < tokens.length - 1) {
+          primetext = pickone + ' ' + tokens[find + 1];
         } else {
-          primetext = tokens[find-1] + ' ' + pickone;
+          primetext = tokens[find - 1] + ' ' + pickone;
         }
       }
     }
@@ -333,7 +333,7 @@ function LSTMTweet(len, name, txt, id) {
       start = end;
       end = start;
     }
-    tokens = tokens.slice(start, end+1);
+    tokens = tokens.slice(start, end + 1);
     primetext = tokens.join(' ');
   }
 
@@ -433,7 +433,10 @@ function tweeted(err, data, response) {
   }
 }
 
-function falconer(start) {
+function falconer(start, prob) {
+  if (prob == undefind) {
+    prob = 0;
+  }
   console.log('original: ' + start);
   var output = [];
 
@@ -462,6 +465,10 @@ function falconer(start) {
         if (/^#.*?/.test(word)) {
           pos = 'HASHTAG';
         }
+        if (/^@.*?/.test(word)) {
+          pos = 'PERSON';
+          ner = true;
+        }
         var options = posdict.dict[pos];
         if (options) {
           var r = Math.random();
@@ -472,10 +479,12 @@ function falconer(start) {
           if ((r < 0.8) && ner) {
             swap = true;
             allgood = true;
-          } else if ((r < 0.4) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD' || pos == 'HASHTAG')) {
+          } else if ((r < 0.4 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
             swap = true;
             allgood = true;
-          } else if (r < 0.1) {
+          } else if (r < 0.3 && pos == 'HASHTAG') {
+            swap = true;
+          } else if (r < 0.1 + prob) {
             swap = true;
           }
           // Hack to deal with contraction problem right now

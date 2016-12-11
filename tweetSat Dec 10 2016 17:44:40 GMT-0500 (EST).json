@@ -1,0 +1,96 @@
+{
+  "created_at": "Sat Dec 10 22:44:40 +0000 2016",
+  "id": 807717698843148300,
+  "id_str": "807717698843148288",
+  "text": "@CurtClark @SwarmApp I really need to go to a finale one of these seasons",
+  "display_text_range": [
+    21,
+    73
+  ],
+  "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+  "truncated": false,
+  "in_reply_to_status_id": 807715038547103700,
+  "in_reply_to_status_id_str": "807715038547103749",
+  "in_reply_to_user_id": 4440841,
+  "in_reply_to_user_id_str": "4440841",
+  "in_reply_to_screen_name": "CurtClark",
+  "user": {
+    "id": 32174436,
+    "id_str": "32174436",
+    "name": "Jordan Kalish",
+    "screen_name": "JordanKalish",
+    "location": null,
+    "url": null,
+    "description": "Yankee, NY Jets, and Larry David fan. This Week in Survivor History co-host on #RHAP. It's pronounced KAY-lish, not kuh-LISH. No, I'm not Spencer Bledsoe.",
+    "protected": false,
+    "verified": false,
+    "followers_count": 1214,
+    "friends_count": 885,
+    "listed_count": 38,
+    "favourites_count": 3417,
+    "statuses_count": 3262,
+    "created_at": "Thu Apr 16 22:07:24 +0000 2009",
+    "utc_offset": -18000,
+    "time_zone": "Eastern Time (US & Canada)",
+    "geo_enabled": true,
+    "lang": "en",
+    "contributors_enabled": false,
+    "is_translator": false,
+    "profile_background_color": "C0DEED",
+    "profile_background_image_url": "http://pbs.twimg.com/profile_background_images/85603127/P8080377.JPG",
+    "profile_background_image_url_https": "https://pbs.twimg.com/profile_background_images/85603127/P8080377.JPG",
+    "profile_background_tile": false,
+    "profile_link_color": "0084B4",
+    "profile_sidebar_border_color": "C0DEED",
+    "profile_sidebar_fill_color": "DDEEF6",
+    "profile_text_color": "333333",
+    "profile_use_background_image": true,
+    "profile_image_url": "http://pbs.twimg.com/profile_images/604483058918526976/jmowdXzU_normal.jpg",
+    "profile_image_url_https": "https://pbs.twimg.com/profile_images/604483058918526976/jmowdXzU_normal.jpg",
+    "profile_banner_url": "https://pbs.twimg.com/profile_banners/32174436/1479964290",
+    "default_profile": false,
+    "default_profile_image": false,
+    "following": null,
+    "follow_request_sent": null,
+    "notifications": null
+  },
+  "geo": null,
+  "coordinates": null,
+  "place": null,
+  "contributors": null,
+  "is_quote_status": false,
+  "retweet_count": 0,
+  "favorite_count": 0,
+  "entities": {
+    "hashtags": [],
+    "urls": [],
+    "user_mentions": [
+      {
+        "screen_name": "CurtClark",
+        "name": "Curt Clark",
+        "id": 4440841,
+        "id_str": "4440841",
+        "indices": [
+          0,
+          10
+        ]
+      },
+      {
+        "screen_name": "SwarmApp",
+        "name": "Foursquare Swarm",
+        "id": 240676055,
+        "id_str": "240676055",
+        "indices": [
+          11,
+          20
+        ]
+      }
+    ],
+    "symbols": []
+  },
+  "favorited": false,
+  "retweeted": false,
+  "filter_level": "low",
+  "lang": "en",
+  "timestamp_ms": "1481409880730"
+}
