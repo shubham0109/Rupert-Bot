@@ -33,7 +33,7 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
-var txt = fs.readFileSync('data/rupert_test.txt', 'utf-8');
+var txt = fs.readFileSync('data/rupert.txt', 'utf-8');
 
 var wordcounts = new Concordance();
 wordcounts.process(txt);
