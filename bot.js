@@ -238,7 +238,7 @@ function tweetEvent(tweet) {
   var id = tweet.id_str;
 
   //if (name.toLowerCase() == 'rupertboneham') {
-  if (name.toLowerCase() == 'JordanKalish') {
+  if (name.toLowerCase() == 'jordankalish') {
     console.log('Original rupert: ' + txt);
     var ruperttweet = falconer(txt);
     if (ruperttweet === undefined) {
