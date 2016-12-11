@@ -59,17 +59,17 @@ for (var i = 0; i < lines.length; i++) {
 }
 posdict.clearNNP();
 
-var testing = true;
+var testing = false;
 
 // Testing reply picking algorithm
 // LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
 
 // Start once
-// tweeter();
+tweeter();
 
 // Once every N milliseconds
 if (testing) {
-  // setInterval(tweeter, 5000);
+  setInterval(tweeter, 5000);
 } else {
   setInterval(tweeter, 60 * 5 * 1000);
 }
@@ -238,7 +238,7 @@ function tweetEvent(tweet) {
   var id = tweet.id_str;
 
   //if (name.toLowerCase() == 'rupertboneham') {
-  if (name.toLowerCase() == 'rupertboneham') {
+  if (name.toLowerCase() == 'JordanKalish') {
     console.log('Original rupert: ' + txt);
     var ruperttweet = falconer(txt);
     if (ruperttweet === undefined) {
@@ -295,7 +295,7 @@ function LSTMTweet(len, name, txt, id) {
         for (var again = 0; again < 5; again++) options.push(word);
       } else if (/^[#@].*?/.test(word)) {
         // do nothing
-      } else if (pos == 'NN' || pos == 'NNS') {
+      } else if (ner != "O" || pos == 'NN' || pos == 'NNS') {
         options.push(word);
       }
     }
@@ -326,6 +326,14 @@ function LSTMTweet(len, name, txt, id) {
       }
     }
   } else {
+    var start = util.randomInt(tokens.length);
+    var end = util.randomInt(tokens.length);
+    if (end < start) {
+      var temp = start;
+      start = end;
+      end = start;
+    }
+    tokens = tokens.slice(start, end+1);
     primetext = tokens.join(' ');
   }
 
