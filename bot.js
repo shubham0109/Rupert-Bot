@@ -229,6 +229,7 @@ function tweetEvent(tweet) {
     }
   }
 
+  console.log(name);
   // Who sent the tweet?
   var name = tweet.user.screen_name;
 
@@ -434,7 +435,7 @@ function tweeted(err, data, response) {
 }
 
 function falconer(start, prob) {
-  if (prob == undefind) {
+  if (!prob) {
     prob = 0;
   }
   console.log('original: ' + start);
