@@ -68,6 +68,9 @@ var testing = false;
 // Start once
 tweeter();
 
+// var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
+// LSTMTweet(150, 'blah', tst, 111);
+
 // Once every N milliseconds
 if (testing) {
   setInterval(tweeter, 5000);
@@ -322,7 +325,7 @@ function LSTMTweet(len, name, txt, id) {
       for (var find = 0; find < tokens.length; find++) {
         if (tokens[find] == pickone && find < tokens.length - 1) {
           primetext = pickone + ' ' + tokens[find + 1];
-        } else {
+        } else if (tokens[find] == pickone) {
           primetext = tokens[find - 1] + ' ' + pickone;
         }
       }
