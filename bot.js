@@ -229,9 +229,9 @@ function tweetEvent(tweet) {
     }
   }
 
-  console.log(name);
   // Who sent the tweet?
   var name = tweet.user.screen_name;
+  console.log(name);
 
   // What is the text?
   var txt = tweet.text;
