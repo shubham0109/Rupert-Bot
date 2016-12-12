@@ -33,7 +33,7 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
-var txt = fs.readFileSync('data/rupert.txt', 'utf-8');
+var txt = fs.readFileSync('data/rupert_test.txt', 'utf-8');
 
 var wordcounts = new Concordance();
 wordcounts.process(txt);
@@ -51,6 +51,7 @@ for (var i = 0; i < lines.length; i++) {
 var cfg = new CFG();
 cfg.initGrammar();
 cfg.addWords(wordcounts);
+
 
 posdict = new POS();
 for (var i = 0; i < lines.length; i++) {
@@ -456,6 +457,7 @@ function falconer(start, prob) {
     for (var k = 0; k < nlp.sentences.length; k++) {
       var tokens = nlp.sentences[k].tokens;
       for (var i = 0; i < tokens.length; i++) {
+        var at = false;
         var ner = false;
         var pos = tokens[i].pos;
         var word = tokens[i].originalText;
@@ -469,6 +471,7 @@ function falconer(start, prob) {
         if (/^@.*?/.test(word)) {
           pos = 'PERSON';
           ner = true;
+          at = true;
         }
         var options = posdict.dict[pos];
         if (options) {
@@ -477,7 +480,10 @@ function falconer(start, prob) {
 
           // Proper Noun
           // console.log('pos: ' + p);
-          if ((r < 0.8) && ner) {
+          if (at) {
+            swap = true;
+            allgood = true;
+          } else if ((r < 0.8) && ner) {
             swap = true;
             allgood = true;
           } else if ((r < 0.4 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
