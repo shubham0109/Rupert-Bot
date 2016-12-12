@@ -255,7 +255,7 @@ function tweetEvent(tweet) {
 
   // Ok, if this was in reply to me
   // Tweets by me show up here too
-  if (name !== 'rupbot' && mentioned) {
+  if (name !== 'rupbot' && mentioned && !/^RT/.test(txt)) {
     // Get rid of the @ mention
     txt = txt.replace(/@rupbot\s+/g, '');
     console.log('original tweet: ' + txt);
@@ -270,7 +270,7 @@ function LSTMTweet(len, name, txt, id) {
 
   var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.5083.t7_cpu.t7', '-length', len];
   params[4] = '-temperature';
-  params[5] = Math.random() * 0.9 + 0.1;
+  params[5] = Math.random() * 0.8 + 0.1;
   params[6] = '-seed';
   params[7] = Math.floor(Math.random() * 1000);
   if (!txt) {
