@@ -129,14 +129,14 @@ function generateTweet(name) {
 
   var r = Math.random();
 
-  if (r < 0) {
+  if (r < 0.1) {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0) {
+  } else if (r < 0.1) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
@@ -146,7 +146,7 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0) {
+  } else if (r < 0.1) {
     console.log('cfg');
     var result = cfg.expand();
     var output = [];
@@ -168,7 +168,7 @@ function generateTweet(name) {
       }
     }
     tweet = output.join('');
-  } else if (r < 1) {
+  } else if (r < 0.9) {
     console.log('the falconer');
     console.log(lines.length);
     var start = util.choice(lines);
