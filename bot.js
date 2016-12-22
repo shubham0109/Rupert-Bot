@@ -58,7 +58,9 @@ for (var i = 0; i < lines.length; i++) {
   console.log(i + '/' + lines.length);
   posdict.process(lines[i]);
 }
-posdict.clearNNP();
+
+// OFF SEASON NOW!
+// posdict.clearNNP();
 
 var testing = false;
 
@@ -129,14 +131,14 @@ function generateTweet(name) {
 
   var r = Math.random();
 
-  if (r < 0.1) {
+  if (r < 0.15) {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.1) {
+  } else if (r < 0.3) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
@@ -146,7 +148,7 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.1) {
+  } else if (r < 0.45) {
     console.log('cfg');
     var result = cfg.expand();
     var output = [];
@@ -168,7 +170,7 @@ function generateTweet(name) {
       }
     }
     tweet = output.join('');
-  } else if (r < 0.9) {
+  } else if (r < 0.85) {
     console.log('the falconer');
     console.log(lines.length);
     var start = util.choice(lines);
