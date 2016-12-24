@@ -17,7 +17,7 @@
 
 When Rupbot tweets, it picks one of four options.
 
-1. Word level markov chain (order: 2).  Using [RiTaJS](https://github.com/dhowe/RiTaJS/), Rupbot picks a random sequence of two starting words.  Until it reaches the end of a "sentence" it continues to ipck new words from its vocabulary based on their [n-grams](https://en.wikipedia.org/wiki/N-gram) of order 2 (also known as "bi-grams") probabilities.  For more about markov chains: http://shiffman.net/a2z/markov
+1. Word level markov chain (order: 2).  Using [RiTaJS](https://github.com/dhowe/RiTaJS/), Rupbot picks a random sequence of two starting words.  Until it reaches the end of a "sentence" it continues to pick new words from its vocabulary based on their [n-grams](https://en.wikipedia.org/wiki/N-gram) of order 2 (also known as "bi-grams") probabilities.  For more about markov chains: http://shiffman.net/a2z/markov
 
 2. Character level markov chain (order: 5).  Rupbot picks a random sequence of 5 characters from its vocabulary and generates new characters based on n-gram probabilities.  It stops at 140 characters. For more about markov chains: http://shiffman.net/a2z/markov
 
