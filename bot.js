@@ -15,9 +15,13 @@ var corenlp = require("corenlp-js-interface");
 
 var wordfilter = require('wordfilter');
 
+// var livetweets = [
+//   'It\'s almost time for tonight\'s episode of #Survivor. Will you be around to live tweet with me? #survivor',
+//   'Each Wednesday night I live tweet Survivor! Watch along with me!'
+// ];
+
 var livetweets = [
-  'It\'s almost time for tonight\'s episode of #Survivor. Will you be around to live tweet with me? #survivor',
-  'Each Wednesday night I live tweet Survivor! Watch along with me!'
+  'It\'s almost time for tonight\'s episode of #Hunted. Will you be around to live tweet with me? #Hunted',
 ];
 
 // Using the Twit node package
@@ -191,6 +195,9 @@ function generateTweet(name) {
   }
 
   // Turn at mentions into hashtags?
+  if (!tweet) {
+    return false;
+  }
   tweet = tweet.replace(/@/, '#');
   return tweet;
 }
