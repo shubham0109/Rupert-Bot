@@ -498,6 +498,9 @@ function falconer(start, prob) {
           if (at) {
             swap = true;
             allgood = true;
+          } else if ((r < 0.9) && pos == 'PERSON') {
+            swap = true;
+            allgood = true;
           } else if ((r < 0.8) && ner) {
             swap = true;
             allgood = true;
