@@ -69,7 +69,7 @@ for (var i = 0; i < lines.length; i++) {
 // HUNTED!
 posdict.clearNNPHunted();
 
-var testing = true;
+var testing = false;
 
 // Testing reply picking algorithm
 // LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
