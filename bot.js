@@ -62,7 +62,10 @@ for (var i = 0; i < lines.length; i++) {
 // OFF SEASON NOW!
 // posdict.clearNNP();
 
-var testing = false;
+// HUNTED!
+posdict.clearNNPHunted();
+
+var testing = true;
 
 // Testing reply picking algorithm
 // LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
@@ -402,7 +405,14 @@ function tweetIt(tweet, replyid) {
   }
 
   // Some hacks to make it more relevant to this season
-  tweet = tweet.replace(/survivorsanjuandelsur/gi, 'SurvivorMillennialsVsGenX')
+  // tweet = tweet.replace(/survivorsanjuandelsur/gi, 'SurvivorMillennialsVsGenX')
+
+  tweet = tweet.replace(/survivor/g, 'hunted');
+  tweet = tweet.replace(/Survivor/g, 'Hunted');
+  tweet = tweet.replace(/SURVIVOR/g, 'HUNTED');
+  tweet = tweet.replace(/survivor/gi, 'Hunted');
+
+
 
   // truncate
   if (tweet.length > 140) {
