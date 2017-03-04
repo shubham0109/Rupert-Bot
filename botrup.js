@@ -64,10 +64,10 @@ for (var i = 0; i < lines.length; i++) {
 }
 
 // OFF SEASON NOW!
-// posdict.clearNNP();
+posdict.clearNNP();
 
 // HUNTED!
-posdict.clearNNPHunted();
+// posdict.clearNNPHunted();
 
 var testing = false;
 
@@ -138,14 +138,14 @@ function generateTweet(name) {
 
   var r = Math.random();
 
-  if (r < 0.05) {
+  if (r < 0.1) {
     console.log('char markov');
     tweet = markov.generate();
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.1) {
+  } else if (r < 0.2) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
     tweet = result[0];
@@ -155,7 +155,7 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  } else if (r < 0.15) {
+  } else if (r < 0.3) {
     console.log('cfg');
     var result = cfg.expand();
     var output = [];
@@ -177,7 +177,7 @@ function generateTweet(name) {
       }
     }
     tweet = output.join('');
-  } else if (r < 0.95) {
+  } else if (r < 0.9) {
     console.log('the falconer');
     console.log(lines.length);
     var start = util.choice(lines);
@@ -281,6 +281,9 @@ function tweetEvent(tweet) {
 
 function LSTMTweet(len, name, txt, id) {
 
+  // We need prime text, start by assuming none
+  var primetext = undefined;
+
   var spawn = require('child_process').spawn;
 
   var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.5315.t7_cpu.t7', '-length', len];
@@ -289,69 +292,80 @@ function LSTMTweet(len, name, txt, id) {
   params[6] = '-seed';
   params[7] = Math.floor(Math.random() * 1000);
   if (!txt) {
-    txt = util.choice(lines);
-  }
-
-  // Remove any URLS
-  txt = txt.replace(/http.*?(\s|$)/g, '');
-
-  // Try some NLP
-  var result = corenlp(txt, 9000, "ner,pos", "json");
-  result = result.replace(/\n+/g, '');
-  var nlp = JSON.parse(result);
-
-
-  var options = [];
-  for (var k = 0; k < nlp.sentences.length; k++) {
-    var tokens = nlp.sentences[k].tokens;
-    for (var i = 0; i < tokens.length; i++) {
-      var pos = tokens[i].pos;
-      var ner = tokens[i].ner;
-      var word = tokens[i].originalText;
-      if (ner == "PERSON") {
-        for (var again = 0; again < 5; again++) options.push(word);
-      } else if (/^[#@].*?/.test(word)) {
-        // do nothing
-      } else if (ner != "O" || pos == 'NN' || pos == 'NNS') {
-        options.push(word);
-      }
+    // Let's sometimes prime with a current cast member!
+    if (Math.random() < 0.5) {
+      primetext = util.choice(posdict.dict);
+    } else {
+      txt = util.choice(lines);
     }
   }
-  console.log(options);
+
+  // If there isn't primetext already, go through this crazy process of picking some
+  if (!primetext) {
+    txt = txt.replace(/http.*?(\s|$)/gi, '');
+    // Forget about any mentions of rupbot
+    txt = txt.replace(/rupbot/gi, '');
+
+    // Try some NLP
+    var result = corenlp(txt, 9000, "ner,pos", "json");
+    result = result.replace(/\n+/g, '');
+    var nlp = JSON.parse(result);
 
 
-  var tokens = txt.split(/[^A-Z'@]+/i);
-  util.cleanAll(tokens);
-  var total = Math.floor(Math.random() * 2) + 1;
-  if (tokens.length < 2) {
-    total = 1;
-  }
-
-  var primetext = 'Survivor';
-  //console.log(total, tokens);
-  if (options.length > 0) {
-    if (total === 1) {
-      primetext = util.choice(options);
-    } else {
-      var pickone = util.choice(options);
-      for (var find = 0; find < tokens.length; find++) {
-        if (tokens[find] == pickone && find < tokens.length - 1) {
-          primetext = pickone + ' ' + tokens[find + 1];
-        } else if (tokens[find] == pickone) {
-          primetext = tokens[find - 1] + ' ' + pickone;
+    var options = [];
+    for (var k = 0; k < nlp.sentences.length; k++) {
+      var tokens = nlp.sentences[k].tokens;
+      for (var i = 0; i < tokens.length; i++) {
+        var pos = tokens[i].pos;
+        var ner = tokens[i].ner;
+        var word = tokens[i].originalText;
+        if (ner == "PERSON") {
+          for (var again = 0; again < 5; again++) options.push(word);
+        } else if (/^[#@].*?/.test(word)) {
+          // do nothing
+        } else if (ner != "O" || pos == 'NN' || pos == 'NNS') {
+          options.push(word);
         }
       }
     }
-  } else {
-    var start = util.randomInt(tokens.length);
-    var end = util.randomInt(tokens.length);
-    if (end < start) {
-      var temp = start;
-      start = end;
-      end = start;
+    console.log(options);
+
+    var tokens = txt.split(/[^A-Z'@]+/i);
+    util.cleanAll(tokens);
+    var total = Math.floor(Math.random() * 2) + 1;
+    if (tokens.length < 2) {
+      total = 1;
     }
-    tokens = tokens.slice(start, end + 1);
-    primetext = tokens.join(' ');
+    //console.log(total, tokens);
+    if (options.length > 0) {
+      if (total === 1) {
+        primetext = util.choice(options);
+      } else {
+        var pickone = util.choice(options);
+        for (var find = 0; find < tokens.length; find++) {
+          if (tokens[find] == pickone && find < tokens.length - 1) {
+            primetext = pickone + ' ' + tokens[find + 1];
+          } else if (tokens[find] == pickone) {
+            primetext = tokens[find - 1] + ' ' + pickone;
+          }
+        }
+      }
+    } else {
+      var start = util.randomInt(tokens.length);
+      var end = util.randomInt(tokens.length);
+      if (end < start) {
+        var temp = start;
+        start = end;
+        end = start;
+      }
+      tokens = tokens.slice(start, end + 1);
+      primetext = tokens.join(' ');
+    }
+  }
+
+  // Last chance just in case, grab a castmember name
+  if (!primetext) {
+    primetext = util.choice(posdict.dict);
   }
 
   params[8] = '-primetext';
@@ -412,12 +426,12 @@ function tweetIt(tweet, replyid) {
   }
 
   // Some hacks to make it more relevant to this season
-  // tweet = tweet.replace(/survivorsanjuandelsur/gi, 'SurvivorMillennialsVsGenX')
+  tweet = tweet.replace(/survivorsanjuandelsur/gi, 'SurvivorGameChangers')
 
-  tweet = tweet.replace(/survivor/g, 'hunted');
-  tweet = tweet.replace(/Survivor/g, 'Hunted');
-  tweet = tweet.replace(/SURVIVOR/g, 'HUNTED');
-  tweet = tweet.replace(/survivor/gi, 'Hunted');
+  // tweet = tweet.replace(/survivor/g, 'hunted');
+  // tweet = tweet.replace(/Survivor/g, 'Hunted');
+  // tweet = tweet.replace(/SURVIVOR/g, 'HUNTED');
+  // tweet = tweet.replace(/survivor/gi, 'Hunted');
 
 
 

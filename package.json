@@ -1,9 +1,9 @@
 {
   "name": "rupertbot",
   "description": "Rupert Bot",
-  "main": "bot.js",
+  "main": "botrup.js",
   "scripts": {
-    "start": "node bot.js",
+    "start": "node botrup.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
