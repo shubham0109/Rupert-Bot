@@ -27,7 +27,7 @@ var Twit = require('twit');
 var rita = require('rita');
 
 // Pulling all my twitter account info from another file
-var config = require('./config.js');
+var config = require('./bird/config.js');
 
 // Making a Twit object for connection to the API
 var T = new Twit(config);
@@ -107,7 +107,7 @@ function tweeter() {
   if (hours < 1 || hours > 4) {
     live = false;
   }
-  // live = true;
+  live = true;
 
   var tweet;
   if (starting) {
@@ -299,6 +299,10 @@ function LSTMTweet(len, name, txt, id) {
 
   // If there isn't primetext already, go through this crazy process of picking some
   if (!primetext) {
+    // Try to fix a bug?
+    if (!txt) {
+      txt = util.choice(posdict.dict);
+    }
     txt = txt.replace(/http.*?(\s|$)/gi, '');
     // Forget about any mentions of rupbot
     txt = txt.replace(/tbirdbot/gi, '');
@@ -312,6 +316,7 @@ function LSTMTweet(len, name, txt, id) {
     var options = [];
     for (var k = 0; k < nlp.sentences.length; k++) {
       var tokens = nlp.sentences[k].tokens;
+      console.log(nlp.sentences[k].tokens);
       for (var i = 0; i < tokens.length; i++) {
         var pos = tokens[i].pos;
         var ner = tokens[i].ner;
