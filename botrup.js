@@ -286,7 +286,7 @@ function LSTMTweet(len, name, txt, id) {
 
   var spawn = require('child_process').spawn;
 
-  var params = ['sample.lua', 'rnn/rupert_dec21.t7', '-length', len];
+  var params = ['sample.lua', 'rnn/rupert_122116_cpu.t7', '-length', len];
   params[4] = '-temperature';
   params[5] = Math.random() * 0.8 + 0.1;
   params[6] = '-seed';
