@@ -15,14 +15,14 @@ var corenlp = require("corenlp-js-interface");
 
 var wordfilter = require('wordfilter');
 
-// var livetweets = [
-//   'It\'s almost time for tonight\'s episode of #Survivor. Will you be around to live tweet with me? #survivor',
-//   'Each Wednesday night I live tweet Survivor! Watch along with me!'
-// ];
-
 var livetweets = [
-  'It\'s almost time for tonight\'s episode of #Hunted. Will you be around to live tweet with me? #Hunted',
+  'It\'s almost time for tonight\'s episode of #Survivor. Will you be around to live tweet with me? #survivor',
+  'Each Wednesday night I live tweet Survivor! Watch along with me!'
 ];
+
+// var livetweets = [
+//   'It\'s almost time for tonight\'s episode of #Hunted. Will you be around to live tweet with me? #Hunted',
+// ];
 
 // Using the Twit node package
 // https://github.com/ttezel/twit
@@ -286,7 +286,7 @@ function LSTMTweet(len, name, txt, id) {
 
   var spawn = require('child_process').spawn;
 
-  var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.5315.t7_cpu.t7', '-length', len];
+  var params = ['sample.lua', 'rnn/rupert_dec21.t7', '-length', len];
   params[4] = '-temperature';
   params[5] = Math.random() * 0.8 + 0.1;
   params[6] = '-seed';

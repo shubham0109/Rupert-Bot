@@ -3,6 +3,8 @@
 var Twit = require('twit');
 var fs = require('fs');
 
+//var who = 'tbirdcooper;'
+
 // Pulling all my twitter account info from another file
 var config = require('./config.js');
 // Making a Twit object for connection to the API
@@ -10,9 +12,11 @@ var T = new Twit(config);
 
 var howmany = 200;
 
+var twitterhandle = 'rupertboneham';
+
 // Execute a Twitter API call
 T.get('statuses/user_timeline', {
-  screen_name: 'rupertboneham',
+  screen_name: twitterhandle,
   count: howmany
 }, gotData);
 var tweets = [];
@@ -36,12 +40,12 @@ function validate(txt) {
 // Callback
 function gotData(err, data) {
 
-  if (data.length === 0) {
+  if (data.length === 1) {
     var s = '';
     for (var i = 0; i < tweets.length; i++) {
       s += tweets[i] + '\n';
     }
-    fs.writeFileSync('rupert_all.txt',s,'utf-8');
+    fs.writeFileSync('alltweets.txt',s,'utf-8');
     process.exit();
   }
 
@@ -66,7 +70,7 @@ function gotData(err, data) {
   console.log(data[last].created_at)
   console.log('Total tweets about survivor: ' + tweets.length)
   T.get('statuses/user_timeline', {
-    screen_name: 'rupertboneham',
+    screen_name: twitterhandle,
     count: howmany,
     max_id: oldest
   }, gotData);
