@@ -77,11 +77,13 @@ tweeter();
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
 // LSTMTweet(150, 'blah', tst, 111);
 
+var howoften = 15;
+
 // Once every N milliseconds
 if (testing) {
   setInterval(tweeter, 5000);
 } else {
-  setInterval(tweeter, 60 * 5 * 1000);
+  setInterval(tweeter, 60 * howoften * 1000);
 }
 
 // Here is the bot!
@@ -98,13 +100,13 @@ function tweeter() {
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
-  if (day == 4 && hours == 0 && minutes > 54) {
+  if (day == 4 && hours == 0 && minutes > (59-howoften)) {
     starting = true;
   }
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours > 4) {
+  if (hours < 1 || hours == 3 || hours > 5) {
     live = false;
   }
   //live = true;

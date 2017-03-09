@@ -77,6 +77,8 @@ var testing = false;
 // Start once
 tweeter();
 
+var howoften = 5;
+
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
 // LSTMTweet(150, 'blah', tst, 111);
 
@@ -84,7 +86,7 @@ tweeter();
 if (testing) {
   setInterval(tweeter, 5000);
 } else {
-  setInterval(tweeter, 60 * 5 * 1000);
+  setInterval(tweeter, 60 * howoften * 1000);
 }
 
 // Here is the bot!
@@ -101,13 +103,13 @@ function tweeter() {
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
-  if (day == 4 && hours == 0 && minutes > 54) {
+  if (day == 4 && hours == 0 && minutes > (59-howoften)) {
     starting = true;
   }
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours > 4) {
+  if (hours < 1 || hours == 3 || hours > 5) {
     live = false;
   }
   // live = true;
@@ -300,8 +302,13 @@ function LSTMTweet(len, name, txt, id) {
     }
   }
 
+
   // If there isn't primetext already, go through this crazy process of picking some
   if (!primetext) {
+    // Try to fix a bug?
+    if (!txt) {
+      txt = util.choice(posdict.dict);
+    }
     txt = txt.replace(/http.*?(\s|$)/gi, '');
     // Forget about any mentions of rupbot
     txt = txt.replace(/rupbot/gi, '');
