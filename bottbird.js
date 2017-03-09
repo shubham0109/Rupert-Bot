@@ -100,7 +100,7 @@ function tweeter() {
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
-  if (day == 4 && hours == 0 && minutes > (59-howoften)) {
+  if (day == 4 && hours == 0 && minutes > (59 - howoften)) {
     starting = true;
   }
   if (day != 4) {
@@ -140,6 +140,7 @@ function generateTweet(name) {
   if (r < 0.1) {
     console.log('char markov');
     tweet = markov.generate();
+    tweet = tweet.replace(/@/, '#');
     if (Math.random() < 0.5) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
@@ -154,29 +155,29 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
-  // No CFG for tbird
-  // } else if (r < 0.3) {
-  //   console.log('cfg');
-  //   var result = cfg.expand();
-  //   var output = [];
-  //   var sentences = result.split(/([.?!]\s+)/);
-  //   for (var i = 0; i < sentences.length; i++) {
-  //     var words = sentences[i].split(/(\s+)/);
-  //     for (var j = 0; j < words.length; j++) {
-  //       var word = words[j];
-  //       if (j == 0) {
-  //         var c = word.charAt(0);
-  //         word = c.toUpperCase() + word.substring(1, word.length);
-  //       } else {
-  //         var pos = rita.RiTa.getPosTags(word);
-  //         if (word.length > 1 && !/^[A-Z]+$/.test(word) && !/nnp/.test(pos[0])) {
-  //           word = word.toLowerCase();
-  //         }
-  //       }
-  //       output.push(word);
-  //     }
-  //   }
-  //   tweet = output.join('');
+    // No CFG for tbird
+    // } else if (r < 0.3) {
+    //   console.log('cfg');
+    //   var result = cfg.expand();
+    //   var output = [];
+    //   var sentences = result.split(/([.?!]\s+)/);
+    //   for (var i = 0; i < sentences.length; i++) {
+    //     var words = sentences[i].split(/(\s+)/);
+    //     for (var j = 0; j < words.length; j++) {
+    //       var word = words[j];
+    //       if (j == 0) {
+    //         var c = word.charAt(0);
+    //         word = c.toUpperCase() + word.substring(1, word.length);
+    //       } else {
+    //         var pos = rita.RiTa.getPosTags(word);
+    //         if (word.length > 1 && !/^[A-Z]+$/.test(word) && !/nnp/.test(pos[0])) {
+    //           word = word.toLowerCase();
+    //         }
+    //       }
+    //       output.push(word);
+    //     }
+    //   }
+    //   tweet = output.join('');
   } else if (r < 0.9) {
     console.log('the falconer');
     console.log(lines.length);
@@ -444,7 +445,7 @@ function tweetIt(tweet, replyid) {
   function exclamation(match) {
     var len = match.length;
     if (len === 1) {
-      var num = Math.floor(Math.random()*5) + 1;
+      var num = Math.floor(Math.random() * 5) + 1;
       var punc = "!";
       for (var i = 0; i < num; i++) {
         punc += "!";
@@ -458,7 +459,7 @@ function tweetIt(tweet, replyid) {
 
   // TBird likes all capitals
   function capitalize(match) {
-    if (Math.random()< 0.1) {
+    if (Math.random() < 0.1) {
       return match.toUpperCase();
     } else {
       return match;
