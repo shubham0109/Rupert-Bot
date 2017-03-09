@@ -330,7 +330,7 @@ function LSTMTweet(len, name, txt, id) {
           for (var again = 0; again < 5; again++) options.push(word);
         } else if (/^[#@].*?/.test(word)) {
           // do nothing
-        } else if (ner != "O" || pos == 'NN' || pos == 'NNS') {
+        } else if (ner != "O" || pos == 'NN' || pos == 'NNS' || options.length == 0) {
           options.push(word);
         }
       }
