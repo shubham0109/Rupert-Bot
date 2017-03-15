@@ -391,7 +391,12 @@ function LSTMTweet(len, name, txt, id) {
         }
         // Last word is also a good option
         if (k == nlp.sentences.length - 1 && i == tokens.length - 1) {
-          options.push(tokens[i].originalText);
+          var w = tokens[i].originalText;
+          if (w.length < 2 && tokens.length > 1) {
+            options.push(tokens[i-1].originalText);
+          } else {
+            options.push(w);
+          }
         }
         var pos = tokens[i].pos;
         var ner = tokens[i].ner;
