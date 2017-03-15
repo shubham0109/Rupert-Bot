@@ -488,11 +488,7 @@ function LSTMTweet(len, name, txt, id) {
     if (name) {
       replyText = '@' + name + ' ' + results[0];
     } else {
-      replyText = results[0];
-    }
-
-    if (arguments.length == 1) {
-      replyText = swapPeople(replyText);
+      replyText = swapPeople(results[0]);
     }
 
     // Post that tweet
