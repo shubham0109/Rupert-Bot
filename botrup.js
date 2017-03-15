@@ -37,6 +37,7 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
+// var txt = fs.readFileSync('data/rupert_test.txt', 'utf-8');
 var txt = fs.readFileSync('data/rupert.txt', 'utf-8');
 
 var wordcounts = new Concordance();
@@ -55,7 +56,6 @@ for (var i = 0; i < lines.length; i++) {
 var cfg = new CFG();
 cfg.initGrammar();
 cfg.addWords(wordcounts);
-
 
 posdict = new POS();
 for (var i = 0; i < lines.length; i++) {
@@ -109,7 +109,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours == 3 || hours > 5) {
+  if (hours < 1 || hours > 4) {
     live = false;
   }
   // live = true;
@@ -160,6 +160,7 @@ function swapPeople(tweet) {
       if (pos == 'PERSON') {
         var options = posdict.dict['PERSON'];
         var r = Math.random();
+        var swap = false;
         if (at) {
           swap = true;
         } else if (r < 0.75) {
@@ -232,7 +233,7 @@ function generateTweet(name) {
     }
     tweet = output.join('');
     tweet = swapPeople(tweet);
-  } else if (r < 0.9) {
+  } else if (r < 0.85) {
     console.log('the falconer');
     console.log(lines.length);
     var start = util.choice(lines);
@@ -244,8 +245,8 @@ function generateTweet(name) {
 
     tweet = falconer(start);
   } else {
-    console.log('LSTM!');
-    LSTMTweet(150, name);
+    console.log('LSTM! ' + name);
+    LSTMTweet(150);
     return false;
   }
 
@@ -349,19 +350,20 @@ function LSTMTweet(len, name, txt, id) {
   if (!txt) {
     // Let's sometimes prime with a current cast member!
     if (Math.random() < 0.5) {
-      primetext = util.choice(posdict.dict);
+      var next = ['is', 'was', 'can', 'should', 'has', '', '', '', '', '', '', '', '', '', ''];
+      next = util.choice(next);
+      primetext = util.choice(posdict.dict['PERSON']) + ' ' + next;
     } else {
       txt = util.choice(lines);
     }
   }
 
-
   // If there isn't primetext already, go through this crazy process of picking some
   if (!primetext) {
     // Try to fix a bug?
-    if (!txt) {
-      txt = util.choice(posdict.dict);
-    }
+    // if (!txt) {
+    //   txt = util.choice(posdict.dict['PERSON']);
+    // }
     txt = txt.replace(/http.*?(\s|$)/gi, '');
     txt = txt.replace(/@.*?\b/gi, '');
     txt = txt.replace(/#.*?\b/gi, '');
@@ -448,7 +450,7 @@ function LSTMTweet(len, name, txt, id) {
 
   // Last chance just in case, grab a castmember name
   if (!primetext) {
-    primetext = util.choice(posdict.dict);
+    primetext = util.choice(posdict.dict['PERSON']);
   }
 
   params[8] = '-primetext';
@@ -481,13 +483,16 @@ function LSTMTweet(len, name, txt, id) {
       return;
     }
 
-
     results[0] = results[0].replace(/@/, '#');
 
     if (name) {
       replyText = '@' + name + ' ' + results[0];
     } else {
       replyText = results[0];
+    }
+
+    if (arguments.length == 1) {
+      replyText = swapPeople(replyText);
     }
 
     // Post that tweet
@@ -608,10 +613,10 @@ function falconer(start, prob) {
           } else if ((r < 0.9) && pos == 'PERSON') {
             swap = true;
             allgood = true;
-          } else if ((r < 0.8) && ner) {
+          } else if ((r < 0.7) && ner) {
             swap = true;
             allgood = true;
-          } else if ((r < 0.4 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
+          } else if ((r < 0.3 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
             swap = true;
             allgood = true;
           } else if (r < 0.3 && pos == 'HASHTAG') {
