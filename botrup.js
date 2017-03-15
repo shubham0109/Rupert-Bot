@@ -103,7 +103,7 @@ function tweeter() {
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
-  if (day == 4 && hours == 0 && minutes > (59-howoften)) {
+  if (day == 4 && hours == 0 && minutes > (59 - howoften)) {
     starting = true;
   }
   if (day != 4) {
@@ -135,6 +135,56 @@ function tweeter() {
 
 }
 
+function swapPeople(tweet) {
+  var result = corenlp(tweet, 9000, "ner,pos", "json");
+  result = result.replace(/\n+/g, '');
+  var nlp = JSON.parse(result);
+  var output = [];
+  for (var k = 0; k < nlp.sentences.length; k++) {
+    var tokens = nlp.sentences[k].tokens;
+    for (var i = 0; i < tokens.length; i++) {
+      var at = false;
+      var ner = false;
+      var pos = tokens[i].pos;
+      var word = tokens[i].originalText;
+      if (tokens[i].ner != "O") {
+        pos = tokens[i].ner;
+      }
+      if (/^#.*?/.test(word)) {
+        pos = 'HASHTAG';
+      }
+      if (/^@.*?/.test(word)) {
+        pos = 'PERSON';
+        at = true;
+      }
+      if (pos == 'PERSON') {
+        var options = posdict.dict['PERSON'];
+        var r = Math.random();
+        if (at) {
+          swap = true;
+        } else if (r < 0.75) {
+          swap = true;
+        }
+        if (swap) {
+          var replace = util.choice(options);
+          replace = util.capitalize(word, replace);
+          console.log(pos + ' ' + word + ' --> ' + replace);
+          output.push(replace);
+        } else {
+          output.push(word);
+        }
+      } else {
+        output.push(word);
+      }
+      output.push(tokens[i].after);
+    }
+  }
+
+  var tweet = output.join('');
+  tweet = tweet.replace(/’/, "'");
+  return tweet;
+}
+
 function generateTweet(name) {
   var tweet;
 
@@ -147,6 +197,7 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
+    tweet = swapPeople(tweet);
   } else if (r < 0.2) {
     console.log('sentence markov');
     var result = rm.generateSentences(1);
@@ -157,6 +208,7 @@ function generateTweet(name) {
       var hash = cfg.expandFrom('<HASHTAG>');
       tweet = tweet + ' ' + hash;
     }
+    tweet = swapPeople(tweet);
   } else if (r < 0.3) {
     console.log('cfg');
     var result = cfg.expand();
@@ -179,6 +231,7 @@ function generateTweet(name) {
       }
     }
     tweet = output.join('');
+    tweet = swapPeople(tweet);
   } else if (r < 0.9) {
     console.log('the falconer');
     console.log(lines.length);
@@ -249,7 +302,7 @@ function tweetEvent(tweet) {
 
   // Who sent the tweet?
   var name = tweet.user.screen_name;
-  console.log(name);
+  // console.log(name);
 
   // What is the text?
   var txt = tweet.text;
@@ -310,6 +363,8 @@ function LSTMTweet(len, name, txt, id) {
       txt = util.choice(posdict.dict);
     }
     txt = txt.replace(/http.*?(\s|$)/gi, '');
+    txt = txt.replace(/@.*?\b/gi, '');
+    txt = txt.replace(/#.*?\b/gi, '');
     // Forget about any mentions of rupbot
     txt = txt.replace(/rupbot/gi, '');
 
@@ -320,18 +375,36 @@ function LSTMTweet(len, name, txt, id) {
 
 
     var options = [];
+
+    var first = true;
+
     for (var k = 0; k < nlp.sentences.length; k++) {
       var tokens = nlp.sentences[k].tokens;
       for (var i = 0; i < tokens.length; i++) {
+
+        // The first two words are a good option
+        if (first && tokens.length > 1) {
+          options.push(tokens[i].originalText + tokens[i].after + tokens[i + 1].originalText);
+          first = false;
+        }
+        // Last word is also a good option
+        if (k == nlp.sentences.length - 1 && i == tokens.length - 1) {
+          options.push(tokens[i].originalText);
+        }
         var pos = tokens[i].pos;
         var ner = tokens[i].ner;
         var word = tokens[i].originalText;
         if (ner == "PERSON") {
-          for (var again = 0; again < 5; again++) options.push(word);
-        } else if (/^[#@].*?/.test(word)) {
-          // do nothing
+          options.push(word);
+          if (i < tokens.length - 1) {
+            options.push(word + tokens[i].after + tokens[i + 1].originalText);
+          }
+          options.push
         } else if (ner != "O" || pos == 'NN' || pos == 'NNS' || options.length == 0) {
           options.push(word);
+          if (i < tokens.length - 1) {
+            options.push(word + tokens[i].after + tokens[i + 1].originalText);
+          }
         }
       }
     }
@@ -345,18 +418,21 @@ function LSTMTweet(len, name, txt, id) {
     }
     //console.log(total, tokens);
     if (options.length > 0) {
-      if (total === 1) {
-        primetext = util.choice(options);
-      } else {
-        var pickone = util.choice(options);
-        for (var find = 0; find < tokens.length; find++) {
-          if (tokens[find] == pickone && find < tokens.length - 1) {
-            primetext = pickone + ' ' + tokens[find + 1];
-          } else if (tokens[find] == pickone) {
-            primetext = tokens[find - 1] + ' ' + pickone;
-          }
-        }
-      }
+      //if (total === 1) {
+      primetext = util.choice(options);
+      // For get all this nonsense, make options with more than one word from time to time
+      // } else {
+      //   var pickone = util.choice(options);
+      //   for (var find = 0; find < tokens.length; find++) {
+      //     if (tokens[find] == pickone && find < tokens.length - 1) {
+      //       primetext = pickone + ' ' + tokens[find + 1];
+      //     } else if (tokens[find] == pickone && find > 0) {
+      //       primetext = tokens[find - 1] + ' ' + pickone;
+      //     } else {
+      //       primetext = pickone;
+      //     }
+      //   }
+      // }
     } else {
       var start = util.randomInt(tokens.length);
       var end = util.randomInt(tokens.length);
