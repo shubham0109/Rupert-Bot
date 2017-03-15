@@ -12,7 +12,7 @@ var T = new Twit(config);
 
 var howmany = 200;
 
-var twitterhandle = 'rupertboneham';
+var twitterhandle = 'tbirdcooper';
 
 // Execute a Twitter API call
 T.get('statuses/user_timeline', {

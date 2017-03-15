@@ -106,7 +106,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours == 3 || hours > 5) {
+  if (hours < 1 || hours > 4) {
     live = false;
   }
   //live = true;
@@ -294,7 +294,7 @@ function LSTMTweet(len, name, txt, id) {
   if (!txt) {
     // Let's sometimes prime with a current cast member!
     if (Math.random() < 0.5) {
-      primetext = util.choice(posdict.dict);
+      primetext = util.choice(posdict.dict['PERSON']);
     } else {
       txt = util.choice(lines);
     }
@@ -304,7 +304,7 @@ function LSTMTweet(len, name, txt, id) {
   if (!primetext) {
     // Try to fix a bug?
     if (!txt) {
-      txt = util.choice(posdict.dict);
+      txt = util.choice(posdict.dict['PERSON']);
     }
     txt = txt.replace(/http.*?(\s|$)/gi, '');
     // Forget about any mentions of rupbot
@@ -370,7 +370,7 @@ function LSTMTweet(len, name, txt, id) {
 
   // Last chance just in case, grab a castmember name
   if (!primetext) {
-    primetext = util.choice(posdict.dict);
+    primetext = util.choice(posdict.dict['PERSON']);
   }
 
   params[8] = '-primetext';
