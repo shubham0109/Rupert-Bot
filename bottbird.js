@@ -100,7 +100,7 @@ function tweeter() {
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
-  if (day == 4 && hours == 0 && minutes > (59 - howoften)) {
+  if (day == 3 && hours == 23 && minutes > (59 - howoften)) {
     starting = true;
   }
   if (day != 4) {
