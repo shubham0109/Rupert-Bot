@@ -177,6 +177,10 @@ function swapPeople(tweet) {
       output.push(tokens[i].after);
     }
   }
+  var tweet = output.join('');
+  tweet = tweet.replace(/’/g, "'");
+  return tweet;
+}
 
 
 function generateTweet(name) {
