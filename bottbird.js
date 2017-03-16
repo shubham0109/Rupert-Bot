@@ -132,6 +132,53 @@ function tweeter() {
 
 }
 
+function swapPeople(tweet) {
+  var result = corenlp(tweet, 9000, "ner,pos", "json");
+  result = result.replace(/\n+/g, '');
+  var nlp = JSON.parse(result);
+  var output = [];
+  for (var k = 0; k < nlp.sentences.length; k++) {
+    var tokens = nlp.sentences[k].tokens;
+    for (var i = 0; i < tokens.length; i++) {
+      var at = false;
+      var ner = false;
+      var pos = tokens[i].pos;
+      var word = tokens[i].originalText;
+      if (tokens[i].ner != "O") {
+        pos = tokens[i].ner;
+      }
+      if (/^#.*?/.test(word)) {
+        pos = 'HASHTAG';
+      }
+      if (/^@.*?/.test(word)) {
+        pos = 'PERSON';
+        at = true;
+      }
+      if (pos == 'PERSON') {
+        var options = posdict.dict['PERSON'];
+        var r = Math.random();
+        var swap = false;
+        if (at) {
+          swap = true;
+        } else if (r < 0.25) {
+          swap = true;
+        }
+        if (swap) {
+          var replace = util.choice(options);
+          replace = util.capitalize(word, replace);
+          console.log(pos + ' ' + word + ' --> ' + replace);
+          output.push(replace);
+        } else {
+          output.push(word);
+        }
+      } else {
+        output.push(word);
+      }
+      output.push(tokens[i].after);
+    }
+  }
+
+
 function generateTweet(name) {
   var tweet;
 
@@ -199,7 +246,8 @@ function generateTweet(name) {
   if (!tweet) {
     return false;
   }
-  tweet = tweet.replace(/@/, '#');
+  swapPeople(tweet);
+  // tweet = tweet.replace(/@/, '#');
   return tweet;
 }
 
@@ -404,7 +452,8 @@ function LSTMTweet(len, name, txt, id) {
     }
 
 
-    results[0] = results[0].replace(/@/, '#');
+    //results[0] = results[0].replace(/@/g, '#');
+    results[0] = swapPeople(results[0]);
 
     if (name) {
       replyText = '@' + name + ' ' + results[0];
@@ -597,6 +646,6 @@ function falconer(start, prob) {
     return undefined;
   }
   var tweet = output.join('');
-  tweet = tweet.replace(/’/, "'");
+  tweet = tweet.replace(/’/g, "'");
   return tweet;
 }

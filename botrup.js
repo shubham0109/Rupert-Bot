@@ -182,7 +182,7 @@ function swapPeople(tweet) {
   }
 
   var tweet = output.join('');
-  tweet = tweet.replace(/’/, "'");
+  tweet = tweet.replace(/’/g, "'");
   return tweet;
 }
 
