@@ -250,7 +250,7 @@ function generateTweet(name) {
   if (!tweet) {
     return false;
   }
-  swapPeople(tweet);
+  tweet = swapPeople(tweet);
   // tweet = tweet.replace(/@/, '#');
   return tweet;
 }
