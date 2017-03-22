@@ -3,11 +3,11 @@
 
 var spawn = require('child_process').spawn;
 
-var params = ['sample.lua', 'rnn/lm_lstm_epoch50.00_1.5315.t7_cpu.t7', '-length', '140'];
+var params = ['sample.lua', 'rnn/tbird_031517_cpu.t7', '-length', '200'];
 params[4] = '-temperature';
-params[5] = Math.random()*0.9 + 0.1;
+params[5] = 0.2;
 params[6] = '-primetext';
-params[7] = 'Ken';
+params[7] = 'How';
 params[8] = '-seed';
 params[9] = Math.floor(Math.random()*1000);
 //console.log(params[5]);
