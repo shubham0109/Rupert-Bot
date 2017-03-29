@@ -77,7 +77,7 @@ tweeter();
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
 // LSTMTweet(150, 'blah', tst, 111);
 
-var howoften = 10;
+var howoften = 15;
 
 // Once every N milliseconds
 if (testing) {
