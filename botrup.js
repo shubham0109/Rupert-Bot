@@ -109,7 +109,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 0 || hours > 3) {
+  if (hours < 0 || hours > 5) {
     live = false;
   }
   // live = true;
