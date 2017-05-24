@@ -520,6 +520,10 @@ function tweetIt(tweet, replyid) {
   }
   tweet = tweet.replace(/\b[a-z]+\b/gi, capitalize);
 
+  // No ampersand
+  tweet = tweet.replace(/&amp;/gi, '&');
+
+
   // truncate
   if (tweet.length > 140) {
     console.log('truncating');

@@ -519,6 +519,8 @@ function tweetIt(tweet, replyid) {
   tweet = tweet.replace(/SurvivorMillennialsVsGenX/gi, 'SurvivorGameChangers');
   // No links!
   tweet = tweet.replace(/http.*?(\s|$)/gi, '');
+  tweet = tweet.replace(/&amp;/gi, '&');
+
 
   // tweet = tweet.replace(/survivor/g, 'hunted');
   // tweet = tweet.replace(/Survivor/g, 'Hunted');
