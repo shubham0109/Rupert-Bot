@@ -614,15 +614,15 @@ function falconer(start, prob) {
           } else if ((r < 0.9) && pos == 'PERSON') {
             swap = true;
             allgood = true;
-          } else if ((r < 0.7) && ner) {
+          } else if ((r < 0.5) && ner) {
             swap = true;
             allgood = true;
-          } else if ((r < 0.3 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
+          } else if ((r < 0.2 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
             swap = true;
             allgood = true;
-          } else if (r < 0.3 && pos == 'HASHTAG') {
+          } else if (r < 0.2 && pos == 'HASHTAG') {
             swap = true;
-          } else if (r < 0.1 + prob) {
+          } else if (r < 0.05 + prob) {
             swap = true;
           }
           // Hack to deal with contraction problem right now
