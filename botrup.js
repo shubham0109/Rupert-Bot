@@ -64,7 +64,7 @@ for (var i = 0; i < lines.length; i++) {
 }
 
 // OFF SEASON NOW!
-posdict.clearNNP();
+// posdict.clearNNP();
 
 // HUNTED!
 // posdict.clearNNPHunted();
@@ -109,7 +109,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 0 || hours > 5) {
+  if (hours < 0 || hours > 1) {
     live = false;
   }
   // live = true;
