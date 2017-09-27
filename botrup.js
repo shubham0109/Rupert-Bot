@@ -69,7 +69,7 @@ posdict.clearNNP();
 // HUNTED!
 // posdict.clearNNPHunted();
 
-var testing = true;
+var testing = false;
 
 // Testing reply picking algorithm
 // LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
@@ -109,7 +109,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 0 || hours > 1) {
+  if (hours < 0 || hours > 4) {
     live = false;
   }
   // live = true;
