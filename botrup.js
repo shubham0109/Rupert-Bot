@@ -64,12 +64,12 @@ for (var i = 0; i < lines.length; i++) {
 }
 
 // OFF SEASON NOW!
-// posdict.clearNNP();
+posdict.clearNNP();
 
 // HUNTED!
 // posdict.clearNNPHunted();
 
-var testing = false;
+var testing = true;
 
 // Testing reply picking algorithm
 // LSTMTweet(150, 'test','This is @test and #testing but my name is Dan.','12345');
