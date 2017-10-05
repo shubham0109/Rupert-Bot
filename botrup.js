@@ -489,6 +489,7 @@ function LSTMTweet(len, name, txt, id) {
     }
 
     results[0] = results[0].replace(/@/, '#');
+    results[0] = results[0].replace(/\[\?1034h/, '');
 
     if (name) {
       replyText = '@' + name + ' ' + results[0];
