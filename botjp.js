@@ -9,7 +9,7 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
-var testing = true;
+var testing = false;
 
 
 var lines = fs.readFileSync('data/jp_curated.txt', 'utf8');
@@ -97,7 +97,6 @@ function tweetIt(tweet, replyid) {
     if (!testing) {
       T.post('statuses/update', params, tweeted);
     } else {
-      T.post('statuses/update', params, tweeted);
       console.log("Testing: " + tweet)
     }
   } else {
