@@ -1,5 +1,6 @@
 var Twit = require('twit');
 var wordfilter = require('wordfilter');
+var util = require('./lib/util.js');
 
 // Pulling all my twitter account info from another file
 var config = require('./jp/config.js');
@@ -18,6 +19,10 @@ var tweets = lines.split(/\n/);
 
 var howoften = 5;
 
+var starts = ['Well,', 'I mean,', 'You know,', 'So, you know,', 'In the firehouse', 'But in the firehouse', 'One step at a time and'];
+var inserts = ['uh', 'I mean', 'you know', 'so', 'so you know'];
+var ends = [', things like that', 'and things like that', ', simple as that', ', but it just is what it is'];
+
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
 // LSTMTweet(150, 'blah', tst, 111);
 
@@ -27,6 +32,40 @@ if (testing) {
   setInterval(tweeter, 5000);
 } else {
   setInterval(tweeter, 60 * howoften * 1000);
+}
+
+function generateTweet(name) {
+  var tweet = util.choice(tweets);
+  var tokens = tweet.split(/([\s,.!?])/);
+  var output = '';
+
+  var start = false;
+  if (Math.random() < 0.4) {
+    output += util.choice(starts);
+    output += ' ';
+    start = true;
+  }
+
+  for (var i = 0; i < tokens.length - 1; i++) {
+    if (start && i == 0 && tokens[i] !== 'I') {
+      tokens[i] = tokens[i].toLowerCase();
+    } else if (tokens[i] == ' ') {
+      if (Math.random() < 0.15) {
+        output += ', ';
+        output += util.choice(inserts);
+        output += ',';
+      }
+    } else if (i == tokens.length - 2) {
+      if (Math.random() < 0.4) {
+        output += util.choice(ends);
+      }
+    }
+    output += tokens[i];
+  }
+
+  output = output.replace('/,,/',',');
+
+  return output;
 }
 
 
@@ -50,7 +89,7 @@ function tweeter() {
   if (day != 4) {
     live = false;
   }
-  if (hours < 1 || hours > 5) {
+  if (hours < 1 || hours > 1) {
     live = false;
   }
 
@@ -73,11 +112,6 @@ function tweeter() {
 
 }
 
-function generateTweet(name) {
-  var r = Math.floor(Math.random() * tweets.length);
-  var tweet = tweets[r];
-  return tweet;
-}
 
 
 function tweetIt(tweet, replyid) {
