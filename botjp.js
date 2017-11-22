@@ -27,7 +27,7 @@ var howoften = 5;
 
 var starts = ['Well,', 'I mean,', 'You know,', 'So, you know,', 'In the firehouse', 'But in the firehouse', 'One step at a time and'];
 var inserts = ['uh', 'I mean', 'you know', 'you know', 'you know', 'so', 'so you know'];
-var ends = [', things like that', 'and things like that', ', simple as that', ', but it just is what it is'];
+var ends = [', things like that', ' and things like that', ', simple as that', ', but it just is what it is'];
 
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
 // LSTMTweet(150, 'blah', tst, 111);
