@@ -56,7 +56,6 @@ function tweeter() {
 
   // Live and Starting
   var tweet;
-  live = true;
   if (live | testing) {
     // Tweet undefined if it goes the LSTM route
     tweet = generateTweet();
@@ -98,6 +97,7 @@ function tweetIt(tweet, replyid) {
     if (!testing) {
       T.post('statuses/update', params, tweeted);
     } else {
+      T.post('statuses/update', params, tweeted);
       console.log("Testing: " + tweet)
     }
   } else {
