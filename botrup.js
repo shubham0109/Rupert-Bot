@@ -103,13 +103,13 @@ function tweeter() {
   // Only tweet UTC Thursdays 1am-4am
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
-  if (day == 3 && hours == 23 && minutes > (59 - howoften)) {
+  if (day == 4 && hours == 0 && minutes > (59 - howoften)) {
     starting = true;
   }
   if (day != 4) {
     live = false;
   }
-  if (hours < 0 || hours > 4) {
+  if (hours < 1 || hours > 5) {
     live = false;
   }
   // live = true;
@@ -313,7 +313,7 @@ function tweetEvent(tweet) {
   //if (name.toLowerCase() == 'rupertboneham') {
   if (name.toLowerCase() == 'rupertboneham' && !/^RT/.test(txt)) {
     console.log('Original rupert: ' + txt);
-    var ruperttweet = falconer(txt, 0.1);
+    var ruperttweet = falconer(txt, 0.05);
     if (ruperttweet === undefined) {
       console.log('rupert tweet fail');
       return;
@@ -342,7 +342,7 @@ function LSTMTweet(len, name, txt, id) {
 
   var spawn = require('child_process').spawn;
 
-  var params = ['sample.lua', 'rnn/rupert_100417_cpu.t7', '-length', len];
+  var params = ['sample.lua', 'rnn/rupert_11_22_17_cpu.t7', '-length', len];
   params[4] = '-temperature';
   params[5] = Math.random() * 0.8 + 0.1;
   params[6] = '-seed';
