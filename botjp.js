@@ -56,6 +56,7 @@ function tweeter() {
 
   // Live and Starting
   var tweet;
+  live = true;
   if (live | testing) {
     // Tweet undefined if it goes the LSTM route
     tweet = generateTweet();
