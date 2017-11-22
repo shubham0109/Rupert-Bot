@@ -618,10 +618,10 @@ function falconer(start, prob) {
           } else if ((r < 0.9) && pos == 'PERSON') {
             swap = true;
             allgood = true;
-          } else if ((r < 0.5) && ner) {
+          } else if ((r < 0.2) && ner) {
             swap = true;
             allgood = true;
-          } else if ((r < 0.2 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
+          } else if ((r < 0.1 + prob) && (pos == 'NN' || pos == 'NNS' || pos == 'JJ' || pos == 'VBN' || pos == 'VB' || pos == 'VBD')) {
             swap = true;
             allgood = true;
           } else if (r < 0.2 && pos == 'HASHTAG') {
