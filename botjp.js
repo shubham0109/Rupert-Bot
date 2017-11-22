@@ -10,7 +10,13 @@ var T = new Twit(config);
 
 var fs = require('fs');
 
+var args = process.argv.slice(2);
+
 var testing = false;
+
+if (args[0] === 'testing') {
+  testing = true;
+}
 
 
 var lines = fs.readFileSync('data/jp_curated.txt', 'utf8');
@@ -20,7 +26,7 @@ var tweets = lines.split(/\n/);
 var howoften = 5;
 
 var starts = ['Well,', 'I mean,', 'You know,', 'So, you know,', 'In the firehouse', 'But in the firehouse', 'One step at a time and'];
-var inserts = ['uh', 'I mean', 'you know', 'so', 'so you know'];
+var inserts = ['uh', 'I mean', 'you know', 'you know', 'you know', 'so', 'so you know'];
 var ends = [', things like that', 'and things like that', ', simple as that', ', but it just is what it is'];
 
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
@@ -63,7 +69,7 @@ function generateTweet(name) {
     output += tokens[i];
   }
 
-  output = output.replace('/,,/',',');
+  output = output.replace('/,,/', ',');
 
   return output;
 }
@@ -142,72 +148,38 @@ function tweetIt(tweet, replyid) {
 
 // When someone follows KenBot
 // Setting up a user stream
-// var stream = T.stream('user');
-// Anytime someone follows me
-// stream.on('follow', followed);
-//
-// // Just looking at the event but I could tweet back!
-// function followed(event) {
-//   var name = event.source.name;
-//   var screenName = event.source.screen_name;
-//   if (screenName.toLowerCase() !== 'apparentlyken') {
-//     var tweet = '@' + screenName + ' Apparently, you are following me.';
-//     tweetIt(tweet);
-//   }
-// }
+var stream = T.stream('user');
 
 // Replying!
-// stream.on('tweet', tweetEvent);
-//
-// function tweetEvent(tweet) {
-//
-//   // If we wanted to write a file out
-//   // to look more closely at the data
-//   // var fs = require('fs');
-//   // var json = JSON.stringify(tweet,null,2);
-//   // fs.writeFile("tweet" + new Date().toString() + ".json", json);
-//
-//   // Who is this in reply to?
-//   // var reply_to = tweet.in_reply_to_screen_name;
-//   var mentioned = false;
-//   var mentions = tweet.entities.user_mentions;
-//   for (var i = 0; i < mentions.length; i++) {
-//     if (mentions[i].screen_name.toLowerCase() == 'apparentlyken') {
-//       mentioned = true;
-//     }
-//   }
-//
-//   // Who sent the tweet?
-//   var name = tweet.user.screen_name;
-//
-//   // What is the text?
-//   var txt = tweet.text;
-//   // If we want the conversation thread
-//   var id = tweet.id_str;
-//
-//   console.log(name, mentioned, txt);
-//
-//   if (name.toLowerCase() == 'kenofthejunglez' && !/^RT/.test(txt)) {
-//     console.log('Original ken: ' + txt);
-//     txt = txt.replace(/@/, '#');
-//     var ruperttweet = "Apparently, " + txt;
-//     tweetIt(ruperttweet);
-//     return;
-//   }
-//
-//
-//
-//   // Ok, if this was in reply to me
-//   // Tweets by me show up here too
-//   if (name.toLowerCase() !== 'apparentlyken' && mentioned && !/^RT/.test(txt)) {
-//     // Get rid of the @ mention
-//     // txt = txt.replace(/@apparentlyken\s+/g, '');
-//     // console.log('original tweet: ' + txt);
-//     // LSTMTweet(150, name, txt, id);
-//     var replyText = '@' + name + ' Apparently.';
-//     tweetIt(replyText, id);
-//   }
-// }
+stream.on('tweet', tweetEvent);
+
+function tweetEvent(tweet) {
+
+  var mentioned = false;
+  var mentions = tweet.entities.user_mentions;
+  for (var i = 0; i < mentions.length; i++) {
+    if (mentions[i].screen_name.toLowerCase() == 'jpandthingsbot') {
+      mentioned = true;
+    }
+  }
+
+  // Who sent the tweet?
+  var name = tweet.user.screen_name;
+
+  // What is the text?
+  var txt = tweet.text;
+  // If we want the conversation thread
+  var id = tweet.id_str;
+
+  console.log(name, mentioned, txt);
+
+  // Ok, if this was in reply to me
+  // Tweets by me show up here too
+  if (name.toLowerCase() !== 'jpandthingsbot' && mentioned && !/^RT/.test(txt)) {
+    var replyText = '@' + name + ' ' + generateTweet();
+    tweetIt(replyText, id);
+  }
+}
 
 
 
