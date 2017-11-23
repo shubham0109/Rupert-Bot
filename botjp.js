@@ -173,11 +173,11 @@ function tweetEvent(tweet) {
   // If we want the conversation thread
   var id = tweet.id_str;
 
-  console.log(name, mentioned, txt);
 
   // Ok, if this was in reply to me
   // Tweets by me show up here too
   if (name.toLowerCase() !== 'jpandthingsbot' && mentioned && !/^RT/.test(txt)) {
+    console.log(name, mentioned, txt);
     var replyText = '@' + name + ' ' + generateTweet();
     tweetIt(replyText, id);
   }
