@@ -69,7 +69,8 @@ function generateTweet(name) {
     output += tokens[i];
   }
 
-  output = output.replace('/,,/', ',');
+  output = output.replace(/,+/, ',');
+
 
   return output;
 }
