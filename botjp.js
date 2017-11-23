@@ -25,7 +25,7 @@ var tweets = lines.split(/\n/);
 
 var howoften = 5;
 
-var starts = ['Well,', 'I mean,', 'You know,', 'So, you know,', 'In the firehouse', 'But in the firehouse', 'One step at a time and'];
+var starts = ['At the end of the day,', 'Well,', 'I mean,', 'You know,', 'So, you know,', 'In the firehouse', 'But in the firehouse', 'One step at a time and'];
 var inserts = ['uh', 'I mean', 'you know', 'you know', 'you know', 'so', 'so you know'];
 var ends = [', things like that', ' and things like that', ', simple as that', ', but it just is what it is'];
 
