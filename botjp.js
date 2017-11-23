@@ -37,6 +37,7 @@ if (testing) {
   tweeter();
   setInterval(tweeter, 5000);
 } else {
+  tweeter();
   setInterval(tweeter, 60 * howoften * 1000);
 }
 
