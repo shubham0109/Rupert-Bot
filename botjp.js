@@ -23,7 +23,8 @@ var lines = fs.readFileSync('data/jp_curated.txt', 'utf8');
 var tweets = lines.split(/\n/);
 
 
-var howoften = 5;
+var howoften = 10;
+var hourly = 60 * 3;
 
 var starts = ['At the end of the day,',
   'Well,',
@@ -50,13 +51,15 @@ var ends = [', things like that',
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
 // LSTMTweet(150, 'blah', tst, 111);
 
+var interval;
+
 // Once every N milliseconds
 if (testing) {
   tweeter();
-  setInterval(tweeter, 5000);
+  interval = setInterval(tweeter, 5000);
 } else {
   tweeter();
-  setInterval(tweeter, 60 * howoften * 1000);
+  interval = setInterval(tweeter, 60 * hourly * 1000);
 }
 
 function generateTweet(name) {
@@ -99,8 +102,8 @@ function generateTweet(name) {
 function tweeter() {
 
   // Live and Starting
-  var live = true;
-  var starting = false;
+  // var live = true;
+  // var starting = false;
   var d = new Date();
   var day = d.getUTCDay();
   var hours = d.getUTCHours();
@@ -110,28 +113,39 @@ function tweeter() {
   // Announce tweeting somwhere in the 5 minutes until range
   console.log(day, hours, minutes);
   if (day == 4 && hours == 0 && minutes > (59 - howoften)) {
-    starting = true;
+    // starting = true;
+    clearInterval(interval);
+    interval = setInterval(tweeter, 60 * howoften * 1000);
   }
-  if (day != 4) {
-    live = false;
+
+  if (day == 4 && hours == 3 && often) {
+    clearInterval(interval);
+    interval = setInterval(tweeter, 60 * hourly * 1000);
+    often = false;
   }
-  if (hours < 1 || hours > 1) {
-    live = false;
-  }
+
+
+  // if (day != 4) {
+  //   live = false;
+  // }
+  // if (hours < 1 || hours > 1) {
+  //   live = false;
+  // }
 
   // Live and Starting
   var tweet;
-  if (live | testing) {
+  // if (live | testing) {
     // Tweet undefined if it goes the LSTM route
     tweet = generateTweet();
     // Make sure nothing offensive
     while (tweet && wordfilter.blacklisted(tweet)) {
       tweet = generateTweet();
     }
-  }
+  // }
 
   // Go ahead
-  if ((live || testing) && tweet) {
+  // if ((live || testing) && tweet) {
+  if (tweet) {
     tweetIt(tweet);
   }
 
