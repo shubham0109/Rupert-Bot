@@ -13,6 +13,7 @@ var fs = require('fs');
 var args = process.argv.slice(2);
 
 var testing = false;
+var often = false;
 
 if (args[0] === 'testing') {
   testing = true;
@@ -62,6 +63,34 @@ if (testing) {
   interval = setInterval(tweeter, 60 * hourly * 1000);
 }
 
+checker();
+setInterval(checker, 60 * howoften * 1000);
+
+function checker() {
+  var d = new Date();
+  var day = d.getUTCDay();
+  var hours = d.getUTCHours();
+  var minutes = d.getUTCMinutes();
+
+  // Only tweet UTC Thursdays 1am-4am
+  // Announce tweeting somwhere in the 5 minutes until range
+  console.log(day, hours, minutes);
+
+  if (day == 4 && hours > 0 && hours < 3 && !often) {
+    clearInterval(interval);
+    interval = setInterval(tweeter, 60 * howoften * 1000);
+    often = true;
+  } else if (often) {
+    clearInterval(interval);
+    interval = setInterval(tweeter, 60 * hourly * 1000);
+    often = false;
+  }
+}
+
+
+
+
+
 function generateTweet(name) {
   var tweet = util.choice(tweets);
   var tokens = tweet.split(/([\s,.!?])/);
@@ -104,25 +133,6 @@ function tweeter() {
   // Live and Starting
   // var live = true;
   // var starting = false;
-  var d = new Date();
-  var day = d.getUTCDay();
-  var hours = d.getUTCHours();
-  var minutes = d.getUTCMinutes();
-
-  // Only tweet UTC Thursdays 1am-4am
-  // Announce tweeting somwhere in the 5 minutes until range
-  console.log(day, hours, minutes);
-  if (day == 4 && hours == 0 && minutes > (59 - howoften)) {
-    // starting = true;
-    clearInterval(interval);
-    interval = setInterval(tweeter, 60 * howoften * 1000);
-  }
-
-  if (day == 4 && hours == 3 && often) {
-    clearInterval(interval);
-    interval = setInterval(tweeter, 60 * hourly * 1000);
-    often = false;
-  }
 
 
   // if (day != 4) {
