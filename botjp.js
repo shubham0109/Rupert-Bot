@@ -27,7 +27,8 @@ var tweets = lines.split(/\n/);
 var howoften = 10;
 var hourly = 60 * 3;
 
-var starts = ['At the end of the day,',
+var starts = ['But hey,',
+  'At the end of the day,',
   'Well,',
   'I mean,',
   'You know,',
@@ -40,13 +41,15 @@ var inserts = ['uh',
   'you know', 'you know', 'you know',
   'just',
   'so',
-  'so you know'
+  'so you know',
+  'like I keep saying'
 ];
 var ends = [', things like that',
   ' and things like that',
   ', simple as that',
   ', but it just is what it is',
-  ' and what not'
+  ' and what not',
+  ', you know what I mean'
 ];
 
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
@@ -80,7 +83,7 @@ function checker() {
     clearInterval(interval);
     interval = setInterval(tweeter, 60 * howoften * 1000);
     often = true;
-  } else if (often) {
+  } else if (day != 4 && hours >= 3 && often) {
     clearInterval(interval);
     interval = setInterval(tweeter, 60 * hourly * 1000);
     often = false;
@@ -145,12 +148,12 @@ function tweeter() {
   // Live and Starting
   var tweet;
   // if (live | testing) {
-    // Tweet undefined if it goes the LSTM route
+  // Tweet undefined if it goes the LSTM route
+  tweet = generateTweet();
+  // Make sure nothing offensive
+  while (tweet && wordfilter.blacklisted(tweet)) {
     tweet = generateTweet();
-    // Make sure nothing offensive
-    while (tweet && wordfilter.blacklisted(tweet)) {
-      tweet = generateTweet();
-    }
+  }
   // }
 
   // Go ahead
