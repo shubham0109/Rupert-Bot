@@ -49,7 +49,8 @@ var ends = [', things like that',
   ', simple as that',
   ', but it just is what it is',
   ' and what not',
-  ', you know what I mean'
+  ', you know what I mean?',
+  ', you know?'
 ];
 
 // var tst = 'Watching learn English is like watching sentient crystals speak through Data calling us "ugly bags of mostly water". #STNG';
@@ -100,30 +101,39 @@ function generateTweet(name) {
   var output = '';
 
   var start = false;
-  if (Math.random() < 0.4) {
+  if (Math.random() < 0.5) {
     output += util.choice(starts);
     output += ' ';
     start = true;
   }
 
+  let endChar;
+
   for (var i = 0; i < tokens.length - 1; i++) {
     if (start && i == 0 && tokens[i] !== 'I') {
       tokens[i] = tokens[i].toLowerCase();
     } else if (tokens[i] == ' ') {
-      if (Math.random() < 0.15) {
+      if (Math.random() < 0.1) {
         output += ', ';
         output += util.choice(inserts);
         output += ',';
       }
     } else if (i == tokens.length - 2) {
-      if (Math.random() < 0.4) {
-        output += util.choice(ends);
+      if (Math.random() < 0.5) {
+        let ending = util.choice(ends);
+        endChar = ending.charAt(ending.length);
+        output += ending;
       }
     }
     output += tokens[i];
   }
 
-  output = output.replace(/,+/, ',');
+  // Use question marks from endings?
+  if (endChar == '?') {
+    output = output.substring(0, output.length - 1) + endChar;
+  }
+
+  output = output.replace(/,+/g, ',');
 
 
   return output;
