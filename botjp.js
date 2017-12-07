@@ -84,7 +84,7 @@ function checker() {
     clearInterval(interval);
     interval = setInterval(tweeter, 60 * howoften * 1000);
     often = true;
-  } else if (day != 4 && hours >= 3 && often) {
+  } else if (day == 4 && hours >= 3 && often) {
     clearInterval(interval);
     interval = setInterval(tweeter, 60 * hourly * 1000);
     often = false;
